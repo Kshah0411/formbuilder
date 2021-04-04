@@ -1,0 +1,128 @@
+<div *ngIf="model && !report" class="padding20 white-bg">
+  <div class="row">
+    <div class="col-12">
+        <div class="btn-cont">
+            <!-- <button (click)="initReport()" class="btn btn-primary pull-left">Response</button> -->
+            <!-- <button (click)="addForm()" class="btn btn-primary pull-right" style="margin-left:3px;">Add Form</button> -->
+            <!-- <button (click)="updateForm()" class="btn btn-primary pull-right">Update</button> -->
+            <a routerLink="/test" target="_blank" class="btn btn-success pull-right" style="margin-right:3px;">View <i class="fa fa-external-link"></i></a>
+          
+          </div>
+    </div>
+  </div>
+  <div class="spacer30"></div>
+  <div class="row" >
+    <div class="col-2" style="overflow:hidden;float: left;border-right: 1px solid rgb(175, 165, 165);;" >
+
+        <!-- <div class="row">
+        <label class="col-8">Background Color</label>
+        <input class="colorpick col-4" type="color" name="bgColor" [(ngModel)]="model.theme.bgColor" >    
+        </div>
+        <div class="row">
+        <label class="col-8">Text Color</label>
+        <input class="colorpick col-4" type="color" name="textColor" [(ngModel)]="model.theme.textColor">    
+        </div> -->
+
+      <h4 (click)="test()" style="margin-top: 30px;">Select Fields</h4>
+      <p>Customize your form by drag and drop below fields to the form area.</p>
+      <!--a draggable element-->
+      <div class="fields" *ngFor="let item of fieldModels">
+        <div class="field pointer shadow-bg" [dndDraggable]="item"
+        [dndEffectAllowed]="'copy'" 
+        [dndDisableIf]="viewForm"
+        (dndEnd)="onDragEnd($event)">
+          <i [ngClass]="item.icon" class="fa pull-left"></i>
+          <h5>{{item.label}}</h5>
+        </div>
+      </div>
+    </div>
+
+    <!--style="overflow-x:hidden;overflow-y:scroll;float:right;height: 700px;"-->
+    <div class="col-7">
+
+      <!--a dropzone-->
+      <!--to allow dropping content that is not [dndDraggable] set dndAllowExternal to true-->
+      <div *ngFor="let drop of dropArr.slice().reverse()" style="margin-top:70px;">
+        <!-- <h2>Template {{drop}}</h2> -->
+        <app-drop-area [indexval]="drop"  [viewForm]="viewForm" (newItemEvent)='formStatus($event)'></app-drop-area>
+      </div>
+    </div>
+
+    <div class="col-3" style="margin-top: 20px;border-left: 1px solid rgb(175, 165, 165);">	
+        <h4>Components</h4>		
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="openPopup(content)"><i class="fa fa-plus"></i>&nbsp;Add Screen</button>	
+        <hr>	
+
+        <div *ngIf="getScreens && getScreens.length < 1">
+          <span>No Screens Yet</span>
+        </div>
+        <div *ngIf="getScreens && getScreens.length > 0">
+          <span>List of Screens</span>
+        </div>
+
+        <div class="accordion">
+          <div dndDropzone dndEffectAllowed="move" (dndDrop)="onDrop($event, getScreens)" class="dndList">
+            <div dndPlaceholderRef class="dndPlaceholder"> </div>
+            <div *ngFor="let screen of getScreens;let i=index;" [dndDraggable]="screen" [dndType]="screen" dndEffectAllowed="move" (dndMoved)="onDragged(screen, getScreens)">
+              <div class="card card-header" (click)="screen.show=!screen.show" >{{screen.ScreenName}}</div>
+                <div class="template" *ngIf="screen.show">
+                  <button type="button" class="btn btn-secondary btn-sm" (click)="addScreenForm(screen)"><i class="fa fa-plus"></i>&nbsp;Add Form</button>
+                  <ul *ngFor="let form of getForms">	
+                    <li *ngIf="form.ScreenID==screen.ScreenID" style="line-height: 1.5;">	
+                      <a href="javascript:void(0)" (click)="formDisplay(form, screen)">{{form.FormName}}</a>	
+                    </li>	
+                  </ul>
+                </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<ng-template #content let-c="close" let-d="dismiss">	
+  <div class="modal-header">	
+    <h4 class="modal-title" id="modal-basic-title">Add a Screen</h4>	
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">	
+      <span aria-hidden="true">&times;</span>	
+    </button>	
+  </div>	
+  <div class="modal-body">	
+    <app-add-screen (newItemEvent)="closePopup($event)" [popup]="popup"></app-add-screen>	
+  </div>	
+</ng-template>
+
+<div *ngIf="report" class="padding20 white-bg">
+    <div class="row">
+        <div class="col-12 btn-cont">
+            <button (click)="report=false" class="btn btn-primary"><< Back</button>
+        </div>
+        <div class="col-12 spacer30"></div>
+        <!-- if records found -->
+        <div  *ngIf="reports?.length > 0" class="col-12">
+            <div *ngFor="let records of reports" class="report-block">
+                <div *ngFor="let record of records.attributes">
+                    <div *ngIf="record.type !='button' && record.type !='paragraph'" class="row">
+                     <div class="col-4">{{record.label}}</div>
+                        <div class="col-8">{{record.value}}</div>
+                    </div>
+                </div>
+            </div>
+            <!-- <pre>{{reports|json}}</pre> -->
+        </div> 
+        <!-- if no records found -->
+        <div *ngIf="reports?.length == 0" class="col-12 btn-cont">
+            No response found
+        </div>
+    </div>
+</div>
+
+<div *ngIf="model" class="container marginT60  marginB30" style="max-width:500px;">
+
+
+<!-- <pre *ngIf="show==1 && model">
+    {{model|json}}
+</pre> -->
