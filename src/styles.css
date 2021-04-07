@@ -119,18 +119,18 @@
 }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-.accordion .card.card-header{
-    cursor: pointer;
-}
-.accordion .template{
-    padding: 20px;
-    border: 1px solid lightgrey;
-}
-mat-card {
-    transition: transform 200ms, opacity 200ms;
-}
 
-.dndDraggingSource {  
-    opacity: .5;
-    transform: scale(.98);
+.accordion .card.card-header{	
+    cursor: pointer;	
+}	
+.accordion .template{	
+    padding: 20px;	
+    border: 1px solid lightgrey;	
+}	
+mat-card {	
+    transition: transform 200ms, opacity 200ms;	
+}	
+.dndDraggingSource {  	
+    opacity: .5;	
+    transform: scale(.98);	
 }

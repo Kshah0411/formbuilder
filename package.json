@@ -33,6 +33,7 @@
     "crypto": "^1.0.1",
     "font-awesome": "^4.7.0",
     "lodash-es": "^4.17.21",
+    "mat-table-exporter": "^9.1.2",
     "mysql": "^2.18.1",
     "ngx-drag-drop": "^1.1.0",
     "ngx-signaturepad": "0.0.9",

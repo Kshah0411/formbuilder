@@ -18,7 +18,25 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TestViewComponent } from './test-view/test-view.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import {MatStepperModule} from '@angular/material/stepper';
+import { ViewDataComponent } from './view-data/view-data.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatButtonModule} from '@angular/material/button';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatSelectModule} from '@angular/material/select';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatInputModule} from '@angular/material/input';
+import {MatTableModule} from '@angular/material/table';
+import { ReactiveFormsModule } from '@angular/forms';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatIconModule} from '@angular/material/icon';
+import { MatSortModule } from '@angular/material/sort';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTableExporterModule } from 'mat-table-exporter';
+import {MatMenuModule} from '@angular/material/menu';
+
 
 const appRoutes: Routes = [
   { path: '', component: EditAppComponent },
@@ -33,21 +51,25 @@ const appRoutes: Routes = [
     routingComponent,
     AddScreenComponent,
     NotfoundComponent,
-    TestViewComponent
+    TestViewComponent,
+    ViewDataComponent
   ],
   imports: [
     RouterModule.forRoot(appRoutes),
     SweetAlert2Module.forRoot(),
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     DndModule,
     HttpClientModule,
     SignaturePadModule,
     NgbModule,
     NoopAnimationsModule,
-    MatStepperModule,
-    DragDropModule
+    DragDropModule,
+    MatStepperModule,MatTabsModule,MatButtonModule,MatAutocompleteModule, MatTableModule,
+    MatSelectModule,MatFormFieldModule, MatPaginatorModule, MatInputModule, MatCheckboxModule,
+    MatChipsModule,MatIconModule,MatSortModule, MatTooltipModule,MatTableExporterModule,MatMenuModule,
   ],
   providers: [FetcherService],
   bootstrap: [AppComponent]

@@ -17,6 +17,7 @@ export class ViewFormComponent implements OnInit {
   ) { }
 
   @Input() form = {};
+  @Input() screen = {};
 
   @ViewChild(SignaturePad) signaturePad: SignaturePad;
    
@@ -231,7 +232,8 @@ export class ViewFormComponent implements OnInit {
       }
       this.model.attributes = fieldsArr;
     });
-    // var fieldsArr = []
+    
+      // var fieldsArr = []
     // this.fetchService.getForm(this.fetchService.screenData["screenid"])
     // .subscribe((res)=>{
       
@@ -243,7 +245,6 @@ export class ViewFormComponent implements OnInit {
     //     this.model.description = res[0].FormDesc;
     //     this.fetchService.getFormFields(res[0].ScreenFormID)
     //     .subscribe((fields) => {
-
     //       for(var i=0;i<fields.length;i++)
     //       {
     //         fieldsArr.push(JSON.parse(fields[i].FieldJSON));
@@ -251,20 +252,7 @@ export class ViewFormComponent implements OnInit {
     //       this.model.attributes = fieldsArr;
     //     });
     //   }
-      
-    //     //  this.fetchService.getFormFields(this.fetchService.formData["FormID"])
-    //     // .subscribe((fields) => {
-    //     //   this.forms.push(this.fetchService.formData["ScreenFormID"]);
-    //     //   this.model.name = this.fetchService.formData["FormName"];
-    //     //   this.model.description = this.fetchService.formData["FormDesc"];
-    //     //   for(var i=0;i<fields.length;i++)
-    //     //   {
-    //     //     fieldsArr.push(JSON.parse(fields[i].FieldJSON));
-    //     //   }
-    //     //   this.model.attributes = fieldsArr;
-    //     // });
-
-    // });
+    
     
   } 
 
@@ -342,6 +330,12 @@ export class ViewFormComponent implements OnInit {
       {
         this.fetchService.getFormDSD(this.form["FormID"])
         .subscribe((ress)=>{
+
+          //console.log(this.screen)
+          for(var i=0;i<labels.length;i++){
+            labels[i] = this.screen["ScreenName"]+"_"+this.model.name.replace(/\s+/g, "_")+"_"+labels[i];
+          }
+          console.log(labels);
 
             this.fetchService.postDynamicTable(ress[0].DSDName,labels,values)
             .subscribe((res) => {

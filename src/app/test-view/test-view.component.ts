@@ -12,6 +12,7 @@ export class TestViewComponent implements OnInit {
 
   screens = [];
   forms = [];
+  isLinear = true;
 
   ngOnInit(): void {
     this.fetchService.getScreens()
@@ -28,6 +29,14 @@ export class TestViewComponent implements OnInit {
         });	
       });		
     });	
+  }
+
+  consent = false;
+  showFirstPage = true;
+  signConsent()
+  {
+    this.consent = true;
+    this.showFirstPage = false;
   }
 
 }

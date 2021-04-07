@@ -1,43 +1,110 @@
-<mat-tab-group>
-    <mat-tab label="Join"> 
-        <form class="example-form">
-            <mat-form-field class="example-full-width" style="margin-top: 1em;">
-              <mat-label>screen name</mat-label>
-              <input type="text"
-                     placeholder="Pick one"
-                     aria-label="Number"
-                     matInput
+
+  <mat-tab-group mat-stretch-tabs (selectedTabChange)="tabClick($event)">
+    <mat-tab label="Active Tables">
+      <mat-form-field class="example-full-width" style="margin-top: 2em;">
+        <mat-label>Screen Name</mat-label>
+        <input type="text" placeholder="Pick a Screen"
+               aria-label="Screen Name" matInput
+               [formControl]="screenControl"
+               [matAutocomplete]="autoScreen">
+        <mat-autocomplete autoActiveFirstOption #autoScreen="matAutocomplete" (optionSelected)='getForms($event.option.value)'>
+          <mat-option *ngFor="let screen of screenOptions | async" [value]="screen.ScreenName">
+            {{screen.ScreenName}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <span>/</span>
+      <mat-form-field class="example-full-width" style="margin-left: 1em;">
+          <mat-label>Form Name</mat-label>
+          <input type="text"
+                 placeholder="Pick a Form"
+                 aria-label="Form Name"
+                 matInput
+                 [formControl]="formControl"
+                 [matAutocomplete]="autoForm">
+          <mat-autocomplete autoActiveFirstOption #autoForm="matAutocomplete">
+            <mat-option *ngFor="let form of formOptions | async" [value]="form.FormName">
+              {{form.FormName}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      <button mat-raised-button color="warn" style="margin-left: 1em;" (click)="showActiveTable()">Show table</button>
+      </mat-tab>
+
+
+
+    <mat-tab label="Archived Data">
+      <mat-form-field class="example-full-width" style="margin-left: 1em;margin-top: 2em;">
+        <mat-label>Archived Forms</mat-label>
+        <input type="text"
+               placeholder="Pick a Form"
+               aria-label="Archived Forms"
+               matInput
+               [formControl]="archivedControl"
+               [matAutocomplete]="autoArchived">
+        <mat-autocomplete autoActiveFirstOption #autoArchived="matAutocomplete">
+          <mat-option *ngFor="let table of archivedOptions | async" [value]="table.FormName">
+            {{table.ScreenName}} / {{table.FormName}} 
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    <button mat-raised-button color="warn" style="margin-left: 1em;" (click)="showArchivedTables()">Show table</button>
+  </mat-tab>
+
+    <mat-tab label="Join Tables"> 
+        <form>
+            <mat-form-field class="example-full-width" style="margin-top: 2em;">
+              <mat-label>Screen Name</mat-label>
+              <input type="text" placeholder="Pick a Screen"
+                     aria-label="Screen Name" matInput
                      [formControl]="screenControl"
                      [matAutocomplete]="autoScreen">
-              <mat-autocomplete autoActiveFirstOption #autoScreen="matAutocomplete">
-                <mat-option *ngFor="let screen of screenOptions | async" [value]="screen">
-                  {{screen}}
+              <mat-autocomplete autoActiveFirstOption #autoScreen="matAutocomplete" (optionSelected)='getForms($event.option.value)'>
+                <mat-option *ngFor="let screen of screenOptions | async" [value]="screen.ScreenName">
+                  {{screen.ScreenName}}
                 </mat-option>
               </mat-autocomplete>
             </mat-form-field>
             <span>/</span>
             <mat-form-field class="example-full-width" style="margin-left: 1em;">
-                <mat-label>form name</mat-label>
+                <mat-label>Form Name</mat-label>
                 <input type="text"
-                       placeholder="Pick one"
-                       aria-label="Number"
+                       placeholder="Pick a Form"
+                       aria-label="Form Name"
                        matInput
                        [formControl]="formControl"
                        [matAutocomplete]="autoForm">
                 <mat-autocomplete autoActiveFirstOption #autoForm="matAutocomplete">
-                  <mat-option *ngFor="let form of filteredOptions | async" [value]="form">
-                    {{form}}
+                  <mat-option *ngFor="let form of formOptions | async" [value]="form.FormName">
+                    {{form.FormName}}
                   </mat-option>
                 </mat-autocomplete>
               </mat-form-field>
-            <button mat-raised-button color="warn" style="margin-left: 5em;" (click)="addTable()">ADD</button>
-            <button mat-raised-button color="warn" style="margin-left: 1em;">GENERATE TABLE</button>
+            <button mat-raised-button color="warn" style="margin-left: 5em;"
+             (click)="addTable()" data-toggle="tooltip" data-placement="top" title="Add Tables to Display">ADD</button>
+            <button mat-raised-button color="warn" style="margin-left: 1em;" (click)="generateTable()">JOIN tables</button>
             <div>
-                <mat-checkbox class="example-margin" [(ngModel)]="checked" name="checkbox">Include archived tables</mat-checkbox>
-            </div>
+                <mat-checkbox class="example-margin" [(ngModel)]="includeArchive"
+                (change)="showArchived($event)" name="checkbox">Include archived tables</mat-checkbox>
+           
+            <mat-form-field class="example-full-width" *ngIf="includeArchive" style="margin-left: 2em">
+              <mat-label>Archived Forms</mat-label>
+              <input type="text"
+                     placeholder="Pick a Form"
+                     aria-label="Archived Forms"
+                     matInput
+                     [formControl]="archivedControl"
+                     [matAutocomplete]="autoArchived">
+              <mat-autocomplete autoActiveFirstOption #autoArchived="matAutocomplete">
+                <mat-option *ngFor="let table of archivedOptions | async" [value]="table.FormName">
+                  {{table.ScreenName}} / {{table.FormName}} 
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
           </form>
           <div>
-            <mat-chip-list #chipList aria-label="Fruit selection">
+            <mat-chip-list #chipList aria-label="Selected Components">
                 <mat-chip
                 *ngFor="let chipValue of chipValues"
                 [selectable]="selectable"
@@ -49,42 +116,45 @@
             </mat-chip-list>
         </div>
     </mat-tab>
-    <mat-tab label="Archived Tables"> Archived Tables </mat-tab>
-    <mat-tab label="Active Tables"> Active Tables </mat-tab>
   </mat-tab-group>
-  <div>
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-    <!--- Note that these columns can be defined in any order.
-          The actual rendered columns are set as a property on the row definition" -->
-  
-    <!-- Position Column -->
-    <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef> No. </th>
-      <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+
+  <div>
+    <div>
+    <mat-form-field fxFlex="100%">
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Search" #input>
+    </mat-form-field>
+
+    <button *ngIf="dataSource.data.length > 0" mat-raised-button color="accent"
+       class="pull-right" [matMenuTriggerFor]="menu" aria-label="Download as">
+      Download <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" xPosition="after">
+      <button mat-menu-item (click)="exporter.exportTable('xlsx')">
+        <span>Excel</span>
+      </button>
+      <button mat-menu-item (click)="exporter.exportTable('csv')">
+        <span>CSV</span>
+      </button>
+    </mat-menu>
+
+  </div>
+
+  <table matTableExporter mat-table [dataSource]="dataSource"
+       #exporter="matTableExporter" class="mat-elevation-z8" matSort>
+    <ng-container matColumnDef="{{k}}" *ngFor="let k of keys['keys'];let i =index"  >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header 
+      data-toggle="tooltip" data-placement="top" title="{{keys['tooltips'][i]}}"> {{keys['columns'][i]}} </th>
+      <td mat-cell *matCellDef="let element"> {{element[k]}} </td>
     </ng-container>
-  
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Name </th>
-      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-    </ng-container>
-  
-    <!-- Weight Column -->
-    <ng-container matColumnDef="weight">
-      <th mat-header-cell *matHeaderCellDef> Weight </th>
-      <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
-    </ng-container>
-  
-    <!-- Symbol Column -->
-    <ng-container matColumnDef="symbol">
-      <th mat-header-cell *matHeaderCellDef> Symbol </th>
-      <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
-    </ng-container>
-  
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <div *ngIf="dataSource.data.length === 0">No records found</div>
+    <tr mat-header-row *matHeaderRowDef="keys['keys']" style="border: 1px solid black !important;"></tr>
+    <tr mat-row *matRowDef="let row; columns: keys['keys'];" style="border: 1px solid black !important;"></tr>
+     <!-- Row shown when there is no matching data. -->
+     <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="{{keys['keys']}}">No data matching with "{{input.value}}"</td>
+    </tr>
   </table>
+  <mat-paginator #paginator [pageSizeOptions]="[5, 10, 20, 30, 50]" showFirstLastButtons></mat-paginator>
 </div>
-  
-  

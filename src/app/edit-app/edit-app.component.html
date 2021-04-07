@@ -28,8 +28,7 @@
       <!--a draggable element-->
       <div class="fields" *ngFor="let item of fieldModels">
         <div class="field pointer shadow-bg" [dndDraggable]="item"
-        [dndEffectAllowed]="'copy'" 
-        [dndDisableIf]="viewForm"
+        [dndEffectAllowed]="'copy'" [dndDisableIf]="viewForm"
         (dndEnd)="onDragEnd($event)">
           <i [ngClass]="item.icon" class="fa pull-left"></i>
           <h5>{{item.label}}</h5>
@@ -44,7 +43,7 @@
       <!--to allow dropping content that is not [dndDraggable] set dndAllowExternal to true-->
       <div *ngFor="let drop of dropArr.slice().reverse()" style="margin-top:70px;">
         <!-- <h2>Template {{drop}}</h2> -->
-        <app-drop-area [indexval]="drop"  [viewForm]="viewForm" (newItemEvent)='formStatus($event)'></app-drop-area>
+        <app-drop-area [indexval]="drop"   [viewForm]="viewForm" (newItemEvent)='formStatus($event)'></app-drop-area>
       </div>
     </div>
 
@@ -59,12 +58,11 @@
         <div *ngIf="getScreens && getScreens.length > 0">
           <span>List of Screens</span>
         </div>
-
         <div class="accordion">
           <div dndDropzone dndEffectAllowed="move" (dndDrop)="onDrop($event, getScreens)" class="dndList">
             <div dndPlaceholderRef class="dndPlaceholder"> </div>
             <div *ngFor="let screen of getScreens;let i=index;" [dndDraggable]="screen" [dndType]="screen" dndEffectAllowed="move" (dndMoved)="onDragged(screen, getScreens)">
-              <div class="card card-header" (click)="screen.show=!screen.show" >{{screen.ScreenName}}</div>
+              <div class="card card-header" (click)="screen.show=!screen.show" >{{screen.ScreenName}} ↓</div>
                 <div class="template" *ngIf="screen.show">
                   <button type="button" class="btn btn-secondary btn-sm" (click)="addScreenForm(screen)"><i class="fa fa-plus"></i>&nbsp;Add Form</button>
                   <ul *ngFor="let form of getForms">	
@@ -74,14 +72,11 @@
                   </ul>
                 </div>
             </div>
-          </div>
+          </div>	
         </div>
-
     </div>
   </div>
 </div>
-
-
 
 <ng-template #content let-c="close" let-d="dismiss">	
   <div class="modal-header">	

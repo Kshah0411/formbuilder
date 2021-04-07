@@ -102,20 +102,11 @@ route.post("/CreateDB", async (req,res) =>{
 
 route.post("/createScreen", async (req,res) =>{
     const conn = await connection().catch(e => {});
-    const result = await query(conn,"CREATE TABLE IF NOT EXISTS "+dbName+".`screen` (`ScreenID` varchar(40) NOT NULL,`ScreenName` varchar(45) NOT NULL,`Date` datetime NOT NULL,`CreatedBy` varchar(45) NOT NULL,`Display` varchar(20) NOT NULL,`Modified` varchar(20) NOT NULL,`OrderNo` int(11) NOT NULL, PRIMARY KEY (`ScreenID`))")
+    const result = await query(conn,"CREATE TABLE IF NOT EXISTS "+dbName+".`screen` (`ScreenID` varchar(40) NOT NULL,`ScreenName` varchar(45) NOT NULL,`Date` datetime NOT NULL,`CreatedBy` varchar(45) NOT NULL,`Display` varchar(20) NOT NULL,`Modified` varchar(20) NOT NULL, `OrderNo` MEDIUMINT NOT NULL, PRIMARY KEY (`ScreenID`))")
     .catch((err) => {res.status(400).send(err);})
     res.json({ Message: 'Created Screen table' });
 });
   
-route.post("/setScreenOrder", async (req, res) => {
-  console.log(req.body)
-  const {OrderNo,ScreenID} = req.body;
-  const conn = await connection().catch(e => { });
-  const result = await query(conn, "UPDATE "+dbName+".`screen` SET OrderNo = \""+OrderNo+"\" Where ScreenID = \""+ScreenID+"\"")
-  .catch((err) => { res.status(400).send(err); })
-  res.json({ Message: 'Updated in Screen Table' });
-});
-
 route.post("/postScreen", async (req, res) => {
     console.log(req.body)
     const {ScreenID,ScreenName,CreatedBy, Display,Modified} = req.body;
@@ -130,6 +121,15 @@ route.get("/getScreens", async (req,res) => {
   const results = await query(conn,"SELECT * FROM "+dbName+".screen where Display = 'Yes' Order by OrderNo, Date").	
   catch((err) => { res.status(400).json(err);})	
   res.status(200).send(results);	
+});
+
+route.post("/setScreenOrder", async (req, res) => {
+  console.log(req.body)
+  const {OrderNo,ScreenID} = req.body;
+  const conn = await connection().catch(e => { });
+  const result = await query(conn, "UPDATE "+dbName+".`screen` SET OrderNo = \""+OrderNo+"\" Where ScreenID = \""+ScreenID+"\"")
+  .catch((err) => { res.status(400).send(err); })
+  res.json({ Message: 'Updated in Screen Table' });
 });
 
 route.post("/createScreenForm", async (req, res) => {
@@ -218,7 +218,7 @@ route.post("/createFormField", async (req, res) => {
 route.post("/postFormField", async (req, res) => {
   const {FieldID, Label,FormID, FieldJSON,Row} = req.body;
   const conn = await connection().catch(e => { });
-  const result = await query(conn, "INSERT INTO "+dbName+".`FormField` VALUES(?,?,?,"+Row+")",[FieldID,FormID,FieldJSON])
+  const result = await query(conn, "INSERT INTO "+dbName+".`FormField` VALUES(?,?,?,?,"+Row+")",[FieldID,Label,FormID,FieldJSON])
   .catch((err) => { res.status(400).send(err); })
   res.json({ Message: 'Inserted in FormField table' });
 });
@@ -282,11 +282,28 @@ route.post("/getFormDSD", async (req,res) => {
 });
 
 
+route.post("/postArchived", async (req, res) => {
+  const {ScreenID,FormID,DSDName} = req.body;
+  const conn = await connection().catch(e => { });
+  const result = await query(conn, "INSERT INTO "+dbName+".`Archived` VALUES(?,?,?)",[ScreenID,FormID,DSDName])
+  .catch((err) => { res.status(400).send(err); })
+  res.json({ Message: 'Inserted in Archived table' });
+});
+
+route.get("/getArchived", async (req,res) => {
+  const conn = await connection().catch(e => {});
+  const results = await query(conn,"Select * from "+dbName+".screenform join "+dbName+".Archived join "+dbName+".screen on screenform.ScreenFormID = archived.FormID and screenform.ScreenID = archived.ScreenID and screen.ScreenID = archived.ScreenID").
+  catch((err) => { res.status(400).json(err);})
+  res.status(200).send(results);
+});
+
+
+
 route.post("/deleteFormID", async (req,res) => {
   const {FormID} = req.body;
   const conn = await connection().catch(e => {});
   const qu = "Delete from "+dbName+".Form where FormID like \""+FormID+"\"; Delete from "+dbName+".FormField where FormID like \""+FormID+"\"; Delete from "+dbName+".ScreenForm where ScreenFormID like \""+FormID+"\"; Delete from "+dbName+".Form_DSD where FormID like \""+FormID+"\";";
-  //console.log(qu);
+
   const results = await query(conn,qu).
   catch((err) => { res.status(400).json(err);})
   res.json({Message:'Deleted all Form details'});
@@ -297,13 +314,13 @@ route.post("/deleteFormID", async (req,res) => {
 
 route.post("/createDynamicTable", async (req, res) => {
   const {TableName,Labels} = req.body;
-  var qu = "CREATE TABLE IF NOT EXISTS "+dbName+".`"+TableName+"` (";
+  var qu = "CREATE TABLE IF NOT EXISTS "+dbName+".`"+TableName+"` (Patient_ID_ID MEDIUMINT NOT NULL AUTO_INCREMENT, ";
   for(var i=0;i<Labels.length;i++)
   {
     qu = qu+Labels[i]+" varchar(50) DEFAULT NULL,";
   }
   qu = qu.slice(0,-1)
-  qu = qu+");";
+  qu = qu+", PRIMARY KEY(Patient_ID_ID));";
 
   console.log(qu);
   const conn = await connection().catch(e => { });
@@ -366,97 +383,67 @@ route.post("/alterDynamicTable", async (req, res) => {
 });
 
 
-// ------------   OLD APIs (Use them as needed)  ----------------------------------------------
-
-// //Dynamic Table Creation
-// route.post("/createForm", async (req, res) => {
-//   const {formID,labels} = req.body;
-//   var qu = "CREATE TABLE IF NOT EXISTS "+dbName+".`"+formID+"` (";
-//   for(var i=0;i<labels.length;i++)
-//   {
-//     qu = qu+labels[i]+" varchar(50) DEFAULT NULL,";
-//   }
-//   qu = qu.slice(0,-1)
-//   qu = qu+");";
-
-//   //console.log(qu);
-//   const conn = await connection().catch(e => { });
-//   const result = await query(conn, qu)
-//   .catch((err) => { res.status(400).send(err); })
-//   res.status(200).json({ Message: 'Created Form table' });
-// });
-
-
-// //Dynamic Table Insertion
-// route.post("/postForm", async (req, res) => {
-//   //console.log(req.body)
-//   const {dbName,formID,values,labels} = req.body;
-//   var qu = "INSERT INTO "+dbName+".`"+formID+"` ( ";
-
-//   for(var i=0;i<labels.length;i++)
-//   {
-//     qu = qu+labels[i]+',';
-//   }
-//   qu = qu.slice(0,-1)
-//   qu = qu+") ";
-
-//   qu = qu + "VALUES(";
-//   for(var i=0;i<values.length;i++)
-//   {
-//     qu = qu+'"'+values[i]+'",';
-//   }
-//   qu = qu.slice(0,-1)
-//   qu = qu+");";
-
-//   console.log(qu);
-//   const conn = await connection().catch(e => { });
-//   const result = await query(conn, qu)
-//   .catch((err) => { res.status(400).send(err); })
-//   res.status(200).json({ Message: 'Posted Form Data' });
-// });
-
-
-// route.post("/putCols", async (req, res) => {
-//   const {dbName,formID,labels} = req.body;
-//   const conn = await connection().catch(e => { });
-//   const result = await query(conn, "Show columns from "+dbName+"."+formID)
-//   .catch((err) => { res.status(400).json(err); })
-//   var existingCols = []
-//   result.map((obj)=>{existingCols.push(obj["Field"])})
+route.post("/joinTables", async (req, res) => {
+  //Get DSD Name for Forms and JOIN Tables. If only one table, return table results
+  const {ScreenID,FormID} = req.body;
+  var DSDNames = [];
   
-//   var qu = "Alter Table "+dbName+"."+formID+" ";
-//   for(var i=0;i<labels.length;i++)
-//   {
-//     if(!existingCols.includes(labels[i]))
-//     {
-//       qu = qu + "Add "+labels[i]+" varchar(50) DEFAULT NULL,";
-//     }
-//   }
-//   qu = qu.slice(0,-1);
-//   qu = qu + ";";
+  const conn = await connection().catch(e => { });
+  for(var i=0;i<FormID.length;i++)
+  {
+    var dsdQuery = "Select * from "+ dbName+".`Form_DSD` where FormID = '"+FormID[i]+"';";
+    
+    const data = await query(conn, dsdQuery)
+    .catch((err) => { res.status(400).send(err); })
+    DSDNames.push(data[0].DSDName);
+  }
 
-//   console.log(qu);
-//   const ans = await query(conn, qu)
-//   .catch((err) => { res.status(400).json(err); })
-//   res.json({Message:"Altered Table"});
-// });
+  if(DSDNames.length == 1)
+  {
+    var qu = "Select * from "+ dbName+".`"+DSDNames[0]+"`;";
+    const data = await query(conn, qu)
+    .catch((err) => { res.status(400).send(err); })
+    res.send(data);
+  }
+  else
+  {
+    var qu = "Select * from ";
+    for(var i=0;i<DSDNames.length;i++)
+    {
+      qu = qu+ dbName+".`"+DSDNames[i]+"` join ";
+    }
+
+    qu = qu.slice(0,-5);
+    qu = qu + "on ";
+
+    for(var i=0;i<DSDNames.length;i++)
+    {
+      if(i>1)
+      {
+        qu = qu.slice(0,-2);
+        qu = qu + "and ";
+        qu = qu + dbName+"."+DSDNames[i-1]+".Patient_ID_ID = ";
+      }
+      qu = qu + dbName+"."+DSDNames[i]+".Patient_ID_ID = ";
+    }
+    qu = qu.slice(0,-2);
+    console.log(qu);
+    const result = await query(conn, qu)
+    .catch((err) => { res.status(400).send(err); })
+    res.send(result);
+  }
+  // res.status(200).json({ Message: 'Joined Dynamic Tables Data' });
+});
 
 
-// route.get("/getform", async (req,res) => {
-//   const conn = await connection().catch(e => {});
-//   const results = await query(conn,'SELECT formJSON FROM form').
-//   catch((err) => { res.status(400).json(err);})
-//   res.status(200).send(results);
-// });
 
-// route.post("/postform", async (req,res) =>{
-//   //console.log(req.body)
-//   const { id,formJSON } = req.body;
-//   const conn = await connection().catch(e => {});
-//   const result = await query(conn, "INSERT INTO "+dbName+".`form` (id, formJSON) VALUES (?, ?)",
-//   [id, formJSON]).catch((err) => {res.status(400).send(err);})
-//   res.status(200).json({ Message: 'Got it' });
-// });
+route.post("/getDSDData", async (req,res) => {
+  const {TableName} = req.body;
+  const conn = await connection().catch(e => {});
+  const results = await query(conn,"Select * from "+dbName+"."+TableName).
+  catch((err) => { res.status(400).json(err);})
+  res.status(200).send(results);
+});
 
 
 route.post("/DropTable", async (req,res) =>{

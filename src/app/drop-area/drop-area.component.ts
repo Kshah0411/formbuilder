@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter} from "@angular/core";
 import { DndDropEvent, DropEffect } from "ngx-drag-drop";
 import { field, value } from "../global.model";
 import swal from "sweetalert2";
@@ -70,7 +70,7 @@ export class DropAreaComponent implements OnInit {
   @Input() indexval: number;
   @Input() viewForm: boolean;
   @Output() newItemEvent = new EventEmitter();
-  
+
   value: value = {
     label: "",
     value: "",
@@ -420,34 +420,34 @@ export class DropAreaComponent implements OnInit {
           confirmButtonText: "Keep Data and Delete this form",
           cancelButtonText:"Delete both Data and Form",
         }).then((res) => {
-          if(res.value)
-          {
-            //API call to drop table
-            for (var i = 0;i < this.fetchService.screenData["forms"].length;i++)
+          for (var i = 0;i < this.fetchService.screenData["forms"].length;i++)
               {
                 if (this.fetchService.screenData["formName"] === 
                 this.fetchService.screenData["forms"][i].FormName) 
                 {
-                  // this.fetchService.deleteFormID(this.fetchService.screenData["forms"][i].ScreenFormID)
-                  // .subscribe((res) => {
-                  //   console.log(res);
-
-                  // });
-
                   this.fetchService.getFormDSD(this.fetchService.screenData["forms"][i].ScreenFormID)
                     .subscribe((ress) => {
 
-                      this.fetchService.DropTable(ress[0].DSDName)
-                        .subscribe((res) => {
-                          console.log(res);
-                        });
+                      // this.fetchService.DropTable(ress[0].DSDName)
+                      //   .subscribe((res) => {
+                      //     console.log(res);
+                      //   });
+                      this.fetchService.postArchived(this.fetchService.screenData["screenid"],this.fetchService.screenData["forms"][i].ScreenFormID,ress[0].DSDName)
+                      .subscribe((res) => {
+                        console.log(res);
+
+                        this.fetchService.modifyForm(this.fetchService.screenData["forms"][i].ScreenFormID,"Yes")
+                           .subscribe((res) => {
+                            console.log(res);
+                          });
+                      })
 
                     });
                     break;
                 }
               }
               swal('Deleted!','Your Template has been deleted Completely.','success');
-          }
+
           this.model.name = "Form name...";
           this.model.description = "Form Description...";
           this.model.attributes = [];
@@ -603,11 +603,8 @@ export class DropAreaComponent implements OnInit {
                               confirmButtonText: "OK",
                             }).then((res) => {
                               setTimeout(function () {
-                                swal("Saved in the DB","","success");
-                              }, 1300);
-                              setTimeout(function () {
                                 location.reload();
-                              }, 2400);
+                              }, 1500);
                             })
                           });
                         }
@@ -699,6 +696,10 @@ export class DropAreaComponent implements OnInit {
                   console.log(data);
               });
 
+              for(var i=0;i<labels.length;i++){
+                labels[i] = this.fetchService.screenData["screenname"]+"_"+this.model.name.replace(/\s+/g, "_")+"_"+labels[i];
+              }
+
               this.fetchService.alterDynamicTable(ress[0].DSDName, labels)
                 .subscribe((res) => {
                   swal({
@@ -709,11 +710,8 @@ export class DropAreaComponent implements OnInit {
                     confirmButtonText: "OK",
                   }).then((res) => {
                       setTimeout(function () {
-                        swal("Saved in the DB","","success");
-                      }, 1300);
-                      setTimeout(function () {
                         location.reload();
-                      },2400);
+                      },1500);
                   })
                   
                   console.log(res);
@@ -731,6 +729,10 @@ export class DropAreaComponent implements OnInit {
                 console.log(data);
               });
 
+              for(var i=0;i<labels.length;i++){
+                labels[i] = this.fetchService.screenData["screenname"]+"_"+this.model.name.replace(/\s+/g, "_")+"_"+labels[i];
+              }
+
             this.fetchService.createDynamicTable(dynamictable, labels)
               .subscribe((data: {}) => {
                 console.log(data);
@@ -743,11 +745,8 @@ export class DropAreaComponent implements OnInit {
                   confirmButtonText: "OK",
                 }).then((res) => {
                     setTimeout(function () {
-                      swal("Saved in the DB","","success");
-                    }, 1300);
-                    setTimeout(function () {
                       location.reload();
-                    }, 2400);
+                    }, 1500);
                 })
               });
           }

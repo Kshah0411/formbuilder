@@ -1,29 +1,15 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { FetcherService } from '../fetcher.service';
+import {map, startWith} from 'rxjs/operators';
+import {MatTableDataSource} from '@angular/material/table';
+import {AfterViewInit, ViewChild} from '@angular/core';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import swal from 'sweetalert2';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-];
 @Component({
   selector: 'app-view-data',
   templateUrl: './view-data.component.html',
@@ -31,59 +17,241 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 export class ViewDataComponent implements OnInit {
 
-  formControl = new FormControl();
-  screenControl = new FormControl();
-  forms: string[] = ['form1', 'form2', 'form3'];
-  screens: string[] = ['screen1', 'screen2', 'screen3'];
-  filteredOptions: Observable<string[]>;
-  screenOptions: Observable<string[]>;
-  checked = false;
-  c_value: string;
-  chipValues: string[] = [];
-  visible = true;
-  selectable = true;
-  removable = true;
+    formControl = new FormControl();
+    screenControl = new FormControl();
+    archivedControl = new FormControl();
+    forms: string[];
+    screens: string[];
+    archived: string[];
+    formOptions: Observable<string[]>;
+    screenOptions: Observable<string[]>;
+    archivedOptions: Observable<string[]>;
+    includeArchive = false;
+    c_value: string;
+    chipValues: string[] = [];
+    visible = true;
+    selectable = true;
+    removable = true;
+    data=[];
 
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = ELEMENT_DATA;
+  dataSource = new MatTableDataSource<any>(this.data);
 
-  ngOnInit() {
-    this.initForm();
+  // @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
-  private initForm() {
-    this.filteredOptions = this.formControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value,'F'))
-    );
-    this.screenOptions = this.screenControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value,'S'))
-    );
+  constructor(private fetchService:FetcherService) {     }
+  
+  ngOnInit(): void {
+    this.getScreens();
   }
 
-  private _filter(value: string, key: string): string[] {
-    const filterValue = value.toLowerCase();
-    if (key === 'S') {
-      return this.screens.filter(screen => screen.toLowerCase().indexOf(filterValue) === 0);
-    } else {
-      return this.forms.filter(form => form.toLowerCase().indexOf(filterValue) === 0);
+  showArchived(event:MatCheckboxChange):void
+  {
+    if(event.checked)
+    {
+      this.getArchived();
+      this.screenControl.setValue('');
+      this.formControl.setValue('');
     }
   }
 
-  addTable(){
-    this.c_value = this.screenControl.value+"/"+this.formControl.value
-    console.log(this.c_value)
-
-    // Add our chip
-    this.chipValues.push(this.c_value)
-
-    //Reset input 
-    this.screenControl.setValue('');
-    this.formControl.setValue('');
+  getScreens()
+  {
+    this.fetchService.getScreens()
+    .subscribe((data) => {	
+      this.screens = data;	
+      //console.log(this.screens)
+      this.screenOptions = this.screenControl.valueChanges.pipe(
+        startWith(''),
+        map(value => this._filter(value,'S'))
+      );
+      
+    });	
   }
-  constructor() {
+
+  getForms(value)
+  {
+    //console.log(value)
+    this.screens.map((s) => {
+      if(s["ScreenName"] === value)
+      {
+        //Get forms from selected screen
+        this.fetchService.getForm(s["ScreenID"]).subscribe((forms) => {
+          this.forms = forms;
+
+          this.formOptions = this.formControl.valueChanges.pipe(
+            startWith(''),
+            map(value => this._filter(value,'F'))
+          );
+        });	
+      }
+    });
     
+  }
+
+  tabClick(tab) {
+    this.screenControl.setValue('');
+    this.formControl.setValue(''); 
+    this.data = [];
+    this.keys = {};
+    this.screenID = [];
+    this.formID = [];
+    this.dataSource = new MatTableDataSource<any>(this.data);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+
+  //To get only archived tables
+    if(tab.index === 1)
+    {
+      this.getArchived();
+    }
+  }
+
+  getArchived()
+  {
+    this.fetchService.getArchived()
+      .subscribe((res) => {
+
+        this.archived = res;
+        //console.log(this.archived)
+
+        this.archivedOptions = this.archivedControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value,'A'))
+        );
+  
+      });
+  }
+  
+
+  
+  //Filtering DropDown values
+  private _filter(value: string, key: string): string[] {
+    const filterValue = value.toLowerCase();
+    if (key === 'S') {
+      return this.screens.filter(screen => screen["ScreenName"].toLowerCase().indexOf(filterValue) === 0);
+    } else if(key === 'F'){
+      return this.forms.filter(form => form["FormName"].toLowerCase().indexOf(filterValue) === 0);
+    }
+    else if(key === 'A'){
+      return this.archived.filter(table => table["ScreenName"].toLowerCase().indexOf(filterValue) === 0);
+    }
+  }
+
+
+  screenID = [];
+  formID = [];
+  
+  keys = {};
+  generateTable()
+  {
+    // console.log(this.screenID);
+    // console.log(this.formID);
+    
+    var columns = [];
+    var tooltips = [];
+    var keys = [];
+    if(this.formID.length > 0){
+      this.fetchService.joinTables(this.screenID,this.formID)
+        .subscribe((res) => {
+          this.data = []
+          this.keys = []
+          res.map((obj) => {
+
+          for(var i=0;i<Object.keys(obj).length;i++)
+          {
+            var arr = Object.keys(obj)[i].split("_");
+            columns.push(arr[2]);
+            tooltips.push(arr[0]+"/"+arr[1]);
+          }
+
+          keys = Object.keys(obj);
+          this.data.push(obj);
+          //console.log(this.keys)
+          
+          this.dataSource = new MatTableDataSource<any>(this.data);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        })
+        
+        this.keys = {"columns":columns,"keys":keys,"tooltips":tooltips};
+      });
+    }
+  }
+
+  //Filter Search Box
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+
+  //Adding to Chips
+  addTable(){
+    if(this.screenControl.value !== '' || this.formControl.value !== '')
+    {
+      this.c_value = this.screenControl.value+"/"+this.formControl.value
+      //console.log(this.c_value)
+      if(!this.chipValues.includes(this.c_value))
+      {
+        this.chipValues.push(this.c_value)
+        var val = this.c_value.split('/');
+          //console.log(val);
+          this.screens.map((s) => {
+            if(s["ScreenName"] == val[0])
+            {
+              this.screenID.push(s["ScreenID"]);
+            }
+          })
+          this.forms.map((f) => {
+            if(f["FormName"] == val[1])
+            {
+              this.formID.push(f["FormID"]);
+            }
+          })
+      }
+      else
+      {
+        console.log("Combination Already exists")
+      }
+    }
+
+    // To include Archived tables
+    if(this.archivedControl.value !== null || this.archivedControl.value !== '')
+    {
+        var temp = [];
+        if(typeof this.archived !== "undefined"){
+          this.archived.map((table) => {
+            if(table["FormName"] === this.archivedControl.value)
+            {
+              this.c_value = table["ScreenName"]+"/"+table["FormName"];
+              temp.push(table["ScreenID"]);
+              temp.push(table["FormID"]);
+            }
+          })
+          
+          if(!this.chipValues.includes(this.c_value))
+          {
+            this.chipValues.push(this.c_value);
+            this.screenID.push(temp[0]);
+            this.formID.push(temp[1]);
+          }
+        } 
+    }
+    //Reset input
+    this.screenControl.setValue('');
+    this.formControl.setValue(''); 
+    this.archivedControl.setValue('');
+
   }
 
   remove(chipValue: string): void {
@@ -91,6 +259,101 @@ export class ViewDataComponent implements OnInit {
 
     if (index >= 0) {
       this.chipValues.splice(index, 1);
+      this.screenID.splice(index,1);
+      this.formID.splice(index,1);
     }
   }
+
+  showActiveTable()
+  {
+    var columns = [];
+    var tooltips = [];
+    var keys = [];
+    this.screenID = [];
+    this.formID = [];
+    this.screens.map((s) => {
+      if(s["ScreenName"] == this.screenControl.value)
+      {
+        this.screenID.push(s["ScreenID"]);
+      }
+    })
+    this.forms.map((f) => {
+      if(f["FormName"] == this.formControl.value)
+      {
+        this.formID.push(f["FormID"]);
+      }
+    })
+
+    if(this.formID.length > 0){
+      this.fetchService.joinTables(this.screenID,this.formID)
+        .subscribe((res) => {
+          this.data = []
+          this.keys = []
+          res.map((obj) => {
+
+          for(var i=0;i<Object.keys(obj).length;i++)
+          {
+            var arr = Object.keys(obj)[i].split("_");
+            columns.push(arr[2]);
+            tooltips.push(arr[0]+"/"+arr[1]);
+          }
+
+          keys = Object.keys(obj);
+          this.data.push(obj);
+          
+          this.dataSource = new MatTableDataSource<any>(this.data);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        })
+        
+        this.keys = {"columns":columns,"keys":keys,"tooltips":tooltips};
+      });
+    }
+  }
+
+
+  showArchivedTables()
+  {
+    var columns = [];
+    var tooltips = [];
+    var keys = [];
+    this.screenID = [];
+    this.formID = [];
+    this.archived.map((table) => {
+      if(table["FormName"] === this.archivedControl.value)
+      {
+        this.screenID.push(table["ScreenID"]);
+        this.formID.push(table["FormID"]);
+      }
+    })
+
+    if(this.formID.length > 0){
+      //join table API can also show one table 
+      this.fetchService.joinTables(this.screenID,this.formID)
+        .subscribe((res) => {
+          console.log(res);
+          this.data = []
+          this.keys = []
+
+          res.map((obj) => {
+          for(var i=0;i<Object.keys(obj).length;i++)
+          {
+            var arr = Object.keys(obj)[i].split("_");
+            columns.push(arr[2]);
+            tooltips.push(arr[0]+"/"+arr[1]);
+          }
+
+          keys = Object.keys(obj);
+          this.data.push(obj);
+          
+          this.dataSource = new MatTableDataSource<any>(this.data);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        })
+        
+        this.keys = {"columns":columns,"keys":keys,"tooltips":tooltips};
+      });
+    }
+  }
+
 }

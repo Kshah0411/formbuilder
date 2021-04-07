@@ -190,16 +190,17 @@ export class EditAppComponent implements OnInit {
   editForm: any;	
   popup: boolean = false;
 
-  public fruits:string[] = [
-    "apple 1",
-    "apple 2",
-    "banana 3",
-    "apple 4",
-    "banana 5",
-    "banana 6",
-    "apple 7",
-    "banana 8",
-    "apple 9",
+
+  public fruits:string[] = [	
+    "apple 1",	
+    "apple 2",	
+    "banana 3",	
+    "apple 4",	
+    "banana 5",	
+    "banana 6",	
+    "apple 7",	
+    "banana 8",	
+    "apple 9",	
   ];
 
   constructor(
@@ -228,12 +229,12 @@ export class EditAppComponent implements OnInit {
     console.log("dragover", JSON.stringify(event, null, 2));
   }
   
-  // onDrop( event:DndDropEvent, list?:any[] ) {
-    // const index = this.getScreens.findIndex(item => {
-    //   return (item.ScreenID == event.data.ScreenID && item.Date == event.data.Date)
-    // });
-    // this.getScreens.splice(index, 1);
-    // this.getScreens = this.getScreens;
+   // onDrop( event:DndDropEvent, list?:any[] ) {	
+    // const index = this.getScreens.findIndex(item => {	
+    //   return (item.ScreenID == event.data.ScreenID && item.Date == event.data.Date)	
+    // });	
+    // this.getScreens.splice(index, 1);	
+    // this.getScreens = this.getScreens;	
   // }
 
   onDragStart(event:DragEvent) {
@@ -252,11 +253,11 @@ export class EditAppComponent implements OnInit {
     console.log("draggable linked", JSON.stringify(event, null, 2));
   }
     
-  //  onDragged( item:any, list:any[], effect:DropEffect ) {
-  //   if( effect === "move" ) {
-  //     const index = list.indexOf( item );
-  //     list.splice( index, 1 );
-  //   }
+   //  onDragged( item:any, list:any[], effect:DropEffect ) {	
+  //   if( effect === "move" ) {	
+  //     const index = list.indexOf( item );	
+  //     list.splice( index, 1 );	
+  //   }	
   // }
       
   onDragCanceled(event:DragEvent) {
@@ -308,8 +309,8 @@ export class EditAppComponent implements OnInit {
     this.fetchService.getScreens().subscribe((data) => {	
       this.getScreens = data;	
       var tempArray = [];	
-      this.getScreens.forEach(obj => {	
-        obj.show = false;
+      this.getScreens.forEach(obj => {
+        obj.show = false;	
         this.fetchService.getForm(obj.ScreenID).subscribe((forms) => {	
           forms.forEach(childobj => {	
             tempArray.push(childobj);	
@@ -322,55 +323,16 @@ export class EditAppComponent implements OnInit {
     
   }	
 
-  formStatus(status){
-    this.viewForm = status;
+  	
+  formStatus(status){	
+    this.viewForm = status;	
   }
 
   formDisplay(form, screen) {	
     this.fetchService.sendFormClickEvent(form,screen);
     this.viewForm = true;
-    // console.log(form)
-    // var model = {	
-    //   'screenname': screen.ScreenName,	
-    //   'screenid': screen.ScreenID,	
-    //   'adminid': screen.CreatedBy,	
-    //   'existForm': true,	
-    //   'existTable': true,	
-    //   'formName': form.FormName,	
-    //   'formNames': [],	
-    //   'forms': [form]	
-    // };
-    // console.log(model)
-    // this.fetchService.formData = form;	
-    // this.fetchService.screenData = model;	
-
   }	
-
-  // formEdit(form, screen) {	
-  //   var model = {	
-  //     'screenname': screen.ScreenName,	
-  //     'screenid': screen.ScreenID,	
-  //     'adminid': screen.CreatedBy,	
-  //     'existForm': true,	
-  //     'existTable': true,	
-  //     'formName': form.FormName,	
-  //     'formNames': [],	
-  //     'forms': [form]	
-  //   };	
-
-  //   this.fetchService.screenData = model;	
-  //   this.fetchService.formData = form;	
-  //   this.fetchService.getFormFields(form.FormID).subscribe((data) => {	
-  //     this.formFields = data;	
-  //     var fields = [];	
-  //     this.formFields.forEach(element => {	
-  //       fields.push(JSON.parse(element.FieldJSON));        	
-  //     });	
-  //     this.fetchService.formFields = fields;	
-  //     this.editForm = form.FormID;	
-  //     this.router.navigateByUrl('/createform');
-  //   });	
-  // }	
+	
 
   addScreenForm(screen) {	
     swal("New Form in the '"+screen.ScreenID+"' screen?");
@@ -387,23 +349,22 @@ export class EditAppComponent implements OnInit {
     this.fetchService.screenData = model;	
   }
   
-  onDragged( item:any, list:any[] ) {
-    const index = list.indexOf( item );
-    list.splice( index, 1 );
+  
+  onDragged( item:any, list:any[] ) {	
+    const index = list.indexOf( item );	
+    list.splice( index, 1 );	
+  }	
+  onDrop( event:DndDropEvent, list:any[] ) {	
+    let index = event.index;	
+    if( typeof index === "undefined" ) {	
+      index = list.length;	
+    }	
+    list.splice( index, 0, event.data );	
+    console.log(this.getScreens);	
+    this.fetchService.setScreenOrder((index+1), event.data.ScreenID).subscribe((res) => {	
+      console.log(res);	
+    });		
   }
-
-  onDrop( event:DndDropEvent, list:any[] ) {
-    let index = event.index;
-    if( typeof index === "undefined" ) {
-      index = list.length;
-    }
-    list.splice( index, 0, event.data );
-    console.log(this.getScreens);
-
-    this.fetchService.setScreenOrder((index+1), event.data.ScreenID).subscribe((res) => {
-      console.log(res);
-    });	
-
-  }
+  
 
 }
