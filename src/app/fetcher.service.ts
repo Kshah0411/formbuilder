@@ -25,11 +25,12 @@ export class FetcherService {
   constructor(private httpClient: HttpClient) { }
 
   private subject = new Subject<any>();
+  private subject1 = new Subject<any>();
   sendFormClickEvent(form,screen) {
-    this.subject.next({form:form,screen:screen});
+    this.subject1.next({form:form,screen:screen});
   }
   getFormClickEvent(): Observable<any>{ 
-    return this.subject.asObservable();
+    return this.subject1.asObservable();
   }
   
   sendAddScreenEvent(screenName){
@@ -140,7 +141,7 @@ export class FetcherService {
   postScreen(data, Display, Modified)
   {
     const body = {"ScreenID":data.screenid,"ScreenName":data.screenname,
-      "CreatedBy":data.adminid, "Display":Display, "Modified":Modified};
+      "CreatedBy":data.adminid, "Display":Display, "Modified":Modified, "OrderNo":data.OrderNo};
     return this.httpClient.post<any>(this.url+"/postScreen",body)
         .pipe(catchError(this.handleError));
   }

@@ -108,11 +108,11 @@ route.post("/createScreen", async (req,res) =>{
 });
   
 route.post("/postScreen", async (req, res) => {
-    console.log(req.body)
-    const {ScreenID,ScreenName,CreatedBy, Display,Modified} = req.body;
+    // console.log(req.body)
+    const {ScreenID,ScreenName,CreatedBy, Display,Modified,OrderNo} = req.body;
     const conn = await connection().catch(e => { });
-    const result = await query(conn, "INSERT INTO "+dbName+".`screen` VALUES (?,?,now(),?,?,?)",
-    [ScreenID, ScreenName, CreatedBy, Display, Modified]).catch((err) => { res.status(400).send(err); })
+    const result = await query(conn, "INSERT INTO "+dbName+".`screen` VALUES (?,?,now(),?,?,?,?)",
+    [ScreenID, ScreenName, CreatedBy, Display, Modified,OrderNo]).catch((err) => { res.status(400).send(err); })
     res.json({ Message: 'Inserted in Screen Table' });
 });
 

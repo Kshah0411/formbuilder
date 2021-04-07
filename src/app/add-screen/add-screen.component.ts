@@ -78,7 +78,7 @@ export class AddScreenComponent implements OnInit {
     }
     this.fetchService.screenData["existForm"] = false;
     swal("Please Add a Form")
-    this.fetchService.sendAddScreenEvent(this.model["screenname"]);
+    this.fetchService.sendAddScreenEvent(this.model.screenname);
   }
 
 }

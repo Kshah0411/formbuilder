@@ -637,6 +637,7 @@ export class DropAreaComponent implements OnInit {
         }
         else
         {
+          this.fetchService.screenData["OrderNo"] = screens.length + 1;
           this.fetchService.postScreen(this.fetchService.screenData, "Yes", "No")
             .subscribe((data: {}) => {
               console.log(data);
