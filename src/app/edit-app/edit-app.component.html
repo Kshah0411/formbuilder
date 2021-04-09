@@ -11,21 +11,50 @@
     </div>
   </div>
   <div class="spacer30"></div>
-  <div class="row" >
-    <div class="col-2" style="overflow:hidden;height:450px; overflow-y: scroll;direction: rtl;float: left;border-right: 1px solid rgb(175, 165, 165);;" >
 
-        <!-- <div class="row">
-        <label class="col-8">Background Color</label>
-        <input class="colorpick col-4" type="color" name="bgColor" [(ngModel)]="model.theme.bgColor" >    
-        </div>
-        <div class="row">
-        <label class="col-8">Text Color</label>
-        <input class="colorpick col-4" type="color" name="textColor" [(ngModel)]="model.theme.textColor">    
-        </div> -->
+  <div class="row">
+    <div [class]="step1class">	
+      <div *ngIf="getScreens && getScreens.length < 1">
+        <span>No Pages Yet</span>
+      </div>
+      <div *ngIf="getScreens && getScreens.length > 0">
+        <h4>Pages</h4>
+      </div>
+      <div class="accordion">
+        <div dndDropzone dndEffectAllowed="move" (dndDrop)="onDrop($event, getScreens)" class="dndList">
+          <div dndPlaceholderRef class="dndPlaceholder"> </div>
+          <div *ngFor="let screen of getScreens;let i=index;" [dndDraggable]="screen" [dndType]="screen" 
+          dndEffectAllowed="move" (dndMoved)="onDragged(screen, getScreens)" (click)="getFormData(screen)">
+            <div class="card card-header" style="float: left;width: 100%" data-toggle="tooltip" data-placement="top" title="Click to see forms">
+              <span style="display: flex;justify-content: space-between;">{{screen.ScreenName}}</span>
+            </div>
+          </div>
+        </div>	
+      </div>
+      <button type="button" class="btn btn-success btn-sm btngreen" (click)="openPopup(content)"><i class="fa fa-plus"></i>&nbsp;Add Screen</button>	
+    </div>
 
+    <div [class]="step2class" style="border-left: 1px solid lightblue;" *ngIf="step>1">
+      <h4>{{screen.ScreenName}} - Forms</h4>
+      <div class="formslist">
+        <ul>	
+          <li *ngFor="let form of getForms">	
+            <button type="button" class="btn btn-sm" (click)="formDisplay(form, screen)">{{form.FormName}}</button>	
+          </li>	
+        </ul>
+      </div>
+      <button type="button" class="btn btn-success btn-sm btngreen" data-toggle="tooltip" data-placement="top" title="Add form in {{screen.ScreenName}}" (click)="addScreenForm()"><i class="fa fa-plus"></i>&nbsp;Add Form</button>
+    </div>
+  
+    <div [class]="step3class" style="border-left: 1px solid lightblue;" *ngIf="step>2">
+      <div *ngFor="let drop of dropArr.slice().reverse()" style="margin-top:70px;">
+        <app-drop-area [indexval]="drop"   [viewForm]="viewForm" (newItemEvent)='formStatus($event)'></app-drop-area>
+      </div>
+    </div>
+
+    <div [class]="step4class" style="border-left: 1px solid lightblue;" *ngIf="step>3">
       <h4 (click)="test()" style="margin-top: 30px;">Select Fields</h4>
       <p>Customize your form by drag and drop below fields to the form area.</p>
-      <!--a draggable element-->
       <div class="fields" *ngFor="let item of fieldModels">
         <div class="field pointer shadow-bg" [dndDraggable]="item"
         [dndEffectAllowed]="'copy'" [dndDisableIf]="viewForm"
@@ -36,54 +65,6 @@
       </div>
     </div>
 
-    <div class="col-7" style="height: 450px; overflow-y: scroll">
-
-      <!--a dropzone-->
-      <!--to allow dropping content that is not [dndDraggable] set dndAllowExternal to true-->
-      <div *ngFor="let drop of dropArr.slice().reverse()" style="margin-top:70px;">
-        <!-- <h2>Template {{drop}}</h2> -->
-        <app-drop-area [indexval]="drop"   [viewForm]="viewForm" (newItemEvent)='formStatus($event)'></app-drop-area>
-      </div>
-    </div>
-
-    <div class="col-3" style="margin-top: 20px;border-left: 1px solid rgb(175, 165, 165);">	
-        <h4>Components</h4>		
-        <button type="button" class="btn btn-outline-primary btn-sm"
-         (click)="openPopup(content)"><i class="fa fa-plus"></i>&nbsp;Add Screen</button>	
-        <hr>	
-
-        <div *ngIf="getScreens && getScreens.length < 1">
-          <span>No Screens Yet</span>
-        </div>
-        <div *ngIf="getScreens && getScreens.length > 0">
-          <span>List of Screens</span>
-        </div>
-
-        <div class="accordion">
-          <div dndDropzone dndEffectAllowed="move" (dndDrop)="onDrop($event, getScreens)" class="dndList">
-            <div dndPlaceholderRef class="dndPlaceholder"> </div>
-            <div *ngFor="let screen of getScreens;let i=index;" [dndDraggable]="screen" [dndType]="screen" 
-            dndEffectAllowed="move" (dndMoved)="onDragged(screen, getScreens)">
-              <div class="card card-header" (click)="screen.show=!screen.show" style="float: left;width: 100%"
-                data-toggle="tooltip" data-placement="top" title="Click to see forms">
-                <span style="display: flex;justify-content: space-between;">{{screen.ScreenName}}
-                <i class="fa fa-angle-down rotate-icon" style="text-align: right;"></i></span>
-              </div>
-                <div class="template" *ngIf="screen.show">
-                  <button type="button" class="btn btn-secondary btn-sm pull-right" (click)="addScreenForm(screen)"
-                  data-toggle="tooltip" data-placement="top" title="Add form in {{screen.ScreenName}}">
-                    <i class="fa fa-plus"></i>&nbsp;Add Form</button>
-                  <ul *ngFor="let form of getForms">	
-                    <li *ngIf="form.ScreenID==screen.ScreenID" style="line-height: 1.5;">	
-                      <a href="javascript:void(0)" (click)="formDisplay(form, screen)">{{form.FormName}}</a>	
-                    </li>	
-                  </ul>
-                </div>
-            </div>
-          </div>	
-        </div>
-
-    </div>
   </div>
 </div>
 

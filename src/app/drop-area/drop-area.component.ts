@@ -531,7 +531,7 @@ export class DropAreaComponent implements OnInit {
         this.fetchService.screenData["existTable"] = false;
       }
     });
-  }
+    }
 
     //Form ID generator
     var date = new Date();
@@ -649,6 +649,7 @@ export class DropAreaComponent implements OnInit {
            
     }
     
+    this.viewForm = true;
   }
 
   async postForm()

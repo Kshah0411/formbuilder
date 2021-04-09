@@ -10,16 +10,16 @@
     <li class="breadcrumb-item" *ngIf="breadCrumbForm != ''" aria-current="page">{{breadCrumbForm}}</li>
     <div class="ml-auto">
       <button (click)="saveForm()" class="btn pull-right"
-        style="margin-left:8px;background-color:aqua" data-toggle="tooltip" data-placement="top" title="Save Form">
+        style="margin-left:8px;background-color:aqua" data-toggle="tooltip" data-placement="top" title="Save Form" *ngIf="!viewForm">
         <i class="fa fa-save"></i>
       </button>
       <!-- <button class="btn pull-right" (click)="deleteForm(indexval)" style="margin-left: 10px;">X</button> -->
       <button (click)="editForm()" class="btn pull-right" data-toggle="tooltip" data-placement="top" title="Edit this Form"
-        style="margin-left:8px;background-color:rgb(211, 205, 205);color: rgb(6, 7, 7);">
+        style="margin-left:8px;background-color:rgb(211, 205, 205);color: rgb(6, 7, 7);" *ngIf="viewForm">
         <i class="fa fa-edit"></i>
       </button>
       <button (click)="deleteOption()" class="btn btn-danger pull-right"
-        style="margin-left:8px;" data-toggle="tooltip" data-placement="top" title="Delete this Form">
+        style="margin-left:8px;" data-toggle="tooltip" data-placement="top" title="Delete this Form" *ngIf="!viewForm">
         <i class="fa fa-trash" style="color: white;"></i>
       </button>
     </div>

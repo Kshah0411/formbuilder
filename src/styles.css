@@ -134,3 +134,24 @@ mat-card {
     opacity: .5;	
     transform: scale(.98);	
 }
+.btngreen{
+    padding: .75rem 1.25rem;
+    width: 100%;
+}
+
+.formslist ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid rgba(0,0,0,.125);
+}
+.formslist ul li{
+    padding: .54rem 1.25rem;
+    margin-bottom: 0;
+    color: inherit;
+    background-color: rgba(0,0,0,.03);
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+.formslist ul li a{
+    color: inherit;
+}

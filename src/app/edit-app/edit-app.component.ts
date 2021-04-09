@@ -20,6 +20,12 @@ export class EditAppComponent implements OnInit {
   };
   success = false;
   dropArr = [1];
+  step : number = 1;
+  step1class : string = 'col-12';
+  step2class : string = 'col-2';
+  step3class : string = 'col-6';
+  step4class : string = 'col-2';
+  screen: any;
 
   fieldModels:Array<field>=[
     {
@@ -216,6 +222,7 @@ export class EditAppComponent implements OnInit {
   }	
   closePopup(data) {	
     this.modalService.dismissAll();	
+    this.showStep2(this.fetchService.screenData);
   }
 
  
@@ -306,38 +313,64 @@ export class EditAppComponent implements OnInit {
   getScreensData() {	
     this.fetchService.getScreens().subscribe((data) => {	
       this.getScreens = data;	
-      var tempArray = [];	
-      this.getScreens.forEach(obj => {
-        obj.show = false;	
-        this.fetchService.getForm(obj.ScreenID).subscribe((forms) => {	
-          forms.forEach(childobj => {	
-            tempArray.push(childobj);	
-          });
-          this.getForms = tempArray;
-          	
-        });	
-      });		
+      // this.getScreens.forEach(obj => {
+      //   obj.show = false;	
+      // });		
     });	
-    
   }	
 
+  getFormData(screen){
+    this.getForms = [];
+    this.fetchService.getForm(screen.ScreenID).subscribe((forms) => {
+      var tempArray = [];		
+      forms.forEach(childobj => {	
+        tempArray.push(childobj);	
+      });
+      this.getForms = tempArray;
+      this.showStep2(screen);
+    });	
+  }
+
+  showStep2(screen){
+    this.step = 2;
+    this.screen = [];
+    this.screen = screen;
+    this.step1class = 'col-3';
+    this.step2class = 'col-9';
+  }
   	
   formStatus(status){	
-    this.viewForm = status;	
+    this.viewForm = status;
+    this.showStep4();
+  }
+
+  showStep4(){	
+    this.step = 4;
+    this.step1class = 'col-2';
+    this.step2class = 'col-2';
+    this.step3class = 'col-6';
+    this.step4class = 'col-2';
   }
 
   formDisplay(form, screen) {	
     this.fetchService.sendFormClickEvent(form,screen);
     this.viewForm = true;
+    this.showStep3();
   }	
-	
 
-  addScreenForm(screen) {	
-    swal("New Form in the '"+screen.ScreenID+"' screen?");
+	showStep3(){
+    this.step = 3;
+    this.step1class = 'col-3';
+    this.step2class = 'col-3';
+    this.step3class = 'col-6';
+  }
+
+  addScreenForm() {	
+    swal("New Form in the '"+this.screen.ScreenID+"' screen?");
     var model = {	
-      'screenname': screen.ScreenName,	
-      'screenid': screen.ScreenID,	
-      'adminid': screen.CreatedBy,	
+      'screenname': this.screen.ScreenName,	
+      'screenid': this.screen.ScreenID,	
+      'adminid': this.screen.CreatedBy,	
       'existForm': false,	
       'existTable': false,	
       'formName': '',	
@@ -345,6 +378,7 @@ export class EditAppComponent implements OnInit {
       'forms': []	
     };	
     this.fetchService.screenData = model;	
+    this.showStep4();
   }
   
   
