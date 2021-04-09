@@ -21,11 +21,12 @@ export class FetcherService {
   public formsFromAddScreen = [];
   public formData: any;
   public formFields = [];
-
+  
   constructor(private httpClient: HttpClient) { }
 
   private subject = new Subject<any>();
   private subject1 = new Subject<any>();
+
   sendFormClickEvent(form,screen) {
     this.subject1.next({form:form,screen:screen});
   }

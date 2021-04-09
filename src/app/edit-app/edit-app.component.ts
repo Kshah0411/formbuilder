@@ -172,8 +172,8 @@ export class EditAppComponent implements OnInit {
 
   modelFields:Array<field>=[];
   model:any = {
-    name:'App name...',
-    description:'App Description...',
+    name:'Form name...',
+    description:'Form Description...',
     theme:{
       bgColor:"ffffff",
       textColor:"555555",
@@ -189,7 +189,6 @@ export class EditAppComponent implements OnInit {
   formFields: any;	
   editForm: any;	
   popup: boolean = false;
-
 
   public fruits:string[] = [	
     "apple 1",	
@@ -302,7 +301,6 @@ export class EditAppComponent implements OnInit {
   ngOnInit() {
     this.fetchService.dropArr = this.dropArr;
     this.getScreensData();
-
   }
 
   getScreensData() {	

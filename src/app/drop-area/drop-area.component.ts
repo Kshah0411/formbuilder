@@ -38,7 +38,6 @@ export class DropAreaComponent implements OnInit {
       this.fetchService.screenData["existForm"] = true;
       this.formDisplay(res["form"],res["screen"]);
     })
-
   }
 
   @ViewChild(SignaturePad) signaturePad: SignaturePad;
@@ -227,8 +226,8 @@ export class DropAreaComponent implements OnInit {
   ];
   modelFields: Array<field> = [];
   model: any = {
-    name: "App name...",
-    description: "App Description...",
+    name: "Form name...",
+    description: "Form Description...",
     theme: {
       bgColor: "ffffff",
       textColor: "555555",
@@ -346,6 +345,7 @@ export class DropAreaComponent implements OnInit {
       //       });
       //   }
       // }
+      
       this.fetchService.model = this.model;
     }
     else

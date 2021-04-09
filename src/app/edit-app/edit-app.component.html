@@ -12,7 +12,7 @@
   </div>
   <div class="spacer30"></div>
   <div class="row" >
-    <div class="col-2" style="overflow:hidden;float: left;border-right: 1px solid rgb(175, 165, 165);;" >
+    <div class="col-2" style="overflow:hidden;height:450px; overflow-y: scroll;direction: rtl;float: left;border-right: 1px solid rgb(175, 165, 165);;" >
 
         <!-- <div class="row">
         <label class="col-8">Background Color</label>
@@ -36,8 +36,7 @@
       </div>
     </div>
 
-    <!--style="overflow-x:hidden;overflow-y:scroll;float:right;height: 700px;"-->
-    <div class="col-7">
+    <div class="col-7" style="height: 450px; overflow-y: scroll">
 
       <!--a dropzone-->
       <!--to allow dropping content that is not [dndDraggable] set dndAllowExternal to true-->
@@ -49,7 +48,8 @@
 
     <div class="col-3" style="margin-top: 20px;border-left: 1px solid rgb(175, 165, 165);">	
         <h4>Components</h4>		
-        <button type="button" class="btn btn-outline-primary btn-sm" (click)="openPopup(content)"><i class="fa fa-plus"></i>&nbsp;Add Screen</button>	
+        <button type="button" class="btn btn-outline-primary btn-sm"
+         (click)="openPopup(content)"><i class="fa fa-plus"></i>&nbsp;Add Screen</button>	
         <hr>	
 
         <div *ngIf="getScreens && getScreens.length < 1">
@@ -58,13 +58,21 @@
         <div *ngIf="getScreens && getScreens.length > 0">
           <span>List of Screens</span>
         </div>
+
         <div class="accordion">
           <div dndDropzone dndEffectAllowed="move" (dndDrop)="onDrop($event, getScreens)" class="dndList">
             <div dndPlaceholderRef class="dndPlaceholder"> </div>
-            <div *ngFor="let screen of getScreens;let i=index;" [dndDraggable]="screen" [dndType]="screen" dndEffectAllowed="move" (dndMoved)="onDragged(screen, getScreens)">
-              <div class="card card-header" (click)="screen.show=!screen.show" >{{screen.ScreenName}} ↓</div>
+            <div *ngFor="let screen of getScreens;let i=index;" [dndDraggable]="screen" [dndType]="screen" 
+            dndEffectAllowed="move" (dndMoved)="onDragged(screen, getScreens)">
+              <div class="card card-header" (click)="screen.show=!screen.show" style="float: left;width: 100%"
+                data-toggle="tooltip" data-placement="top" title="Click to see forms">
+                <span style="display: flex;justify-content: space-between;">{{screen.ScreenName}}
+                <i class="fa fa-angle-down rotate-icon" style="text-align: right;"></i></span>
+              </div>
                 <div class="template" *ngIf="screen.show">
-                  <button type="button" class="btn btn-secondary btn-sm" (click)="addScreenForm(screen)"><i class="fa fa-plus"></i>&nbsp;Add Form</button>
+                  <button type="button" class="btn btn-secondary btn-sm pull-right" (click)="addScreenForm(screen)"
+                  data-toggle="tooltip" data-placement="top" title="Add form in {{screen.ScreenName}}">
+                    <i class="fa fa-plus"></i>&nbsp;Add Form</button>
                   <ul *ngFor="let form of getForms">	
                     <li *ngIf="form.ScreenID==screen.ScreenID" style="line-height: 1.5;">	
                       <a href="javascript:void(0)" (click)="formDisplay(form, screen)">{{form.FormName}}</a>	
@@ -74,9 +82,11 @@
             </div>
           </div>	
         </div>
+
     </div>
   </div>
 </div>
+
 
 <ng-template #content let-c="close" let-d="dismiss">	
   <div class="modal-header">	

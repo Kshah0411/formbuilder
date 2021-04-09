@@ -108,7 +108,7 @@ route.post("/createScreen", async (req,res) =>{
 });
   
 route.post("/postScreen", async (req, res) => {
-    // console.log(req.body)
+    //console.log(req.body)
     const {ScreenID,ScreenName,CreatedBy, Display,Modified,OrderNo} = req.body;
     const conn = await connection().catch(e => { });
     const result = await query(conn, "INSERT INTO "+dbName+".`screen` VALUES (?,?,now(),?,?,?,?)",
@@ -124,7 +124,7 @@ route.get("/getScreens", async (req,res) => {
 });
 
 route.post("/setScreenOrder", async (req, res) => {
-  console.log(req.body)
+  //console.log(req.body)
   const {OrderNo,ScreenID} = req.body;
   const conn = await connection().catch(e => { });
   const result = await query(conn, "UPDATE "+dbName+".`screen` SET OrderNo = \""+OrderNo+"\" Where ScreenID = \""+ScreenID+"\"")
