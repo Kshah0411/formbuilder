@@ -116,11 +116,25 @@ route.post("/postScreen", async (req, res) => {
     res.json({ Message: 'Inserted in Screen Table' });
 });
 
-route.get("/getScreens", async (req,res) => {	
-  const conn = await connection().catch(e => {});	
-  const results = await query(conn,"SELECT * FROM "+dbName+".screen where Display = 'Yes' Order by OrderNo, Date").	
-  catch((err) => { res.status(400).json(err);})	
-  res.status(200).send(results);	
+let cacheScreens;
+let cacheScreensTime;
+route.get("/getScreens", async (req,res, next) => {	
+  if(cacheScreensTime && cacheScreensTime > Date.now() - 15 * 1000)  //20 seconds
+  {
+    return res.send(cacheScreens);
+  }
+  try{
+    const conn = await connection().catch(e => {});	
+    const results = await query(conn,"SELECT * FROM "+dbName+".screen where Display = 'Yes' Order by OrderNo, Date").	
+    catch((err) => { res.status(400).json(err);})	
+    cacheScreens = results;
+    cacheScreensTime = Date.now();
+    return res.status(200).send(results);	
+  }
+  catch(error)
+  {
+    return next(error);
+  }
 });
 
 route.post("/setScreenOrder", async (req, res) => {
@@ -153,7 +167,7 @@ route.post("/getScreenForms", async (req,res) => {
   const conn = await connection().catch(e => {});
   const results = await query(conn,"SELECT * FROM "+dbName+".ScreenForm where ScreenID like \""+ScreenID+"\"").
   catch((err) => { res.status(400).json(err);})
-  res.status(200).send(results);
+  return res.status(200).send(results);
 });
 
 
@@ -387,12 +401,11 @@ route.post("/joinTables", async (req, res) => {
   //Get DSD Name for Forms and JOIN Tables. If only one table, return table results
   const {ScreenID,FormID} = req.body;
   var DSDNames = [];
-  
+
   const conn = await connection().catch(e => { });
   for(var i=0;i<FormID.length;i++)
   {
     var dsdQuery = "Select * from "+ dbName+".`Form_DSD` where FormID = '"+FormID[i]+"';";
-    
     const data = await query(conn, dsdQuery)
     .catch((err) => { res.status(400).send(err); })
     DSDNames.push(data[0].DSDName);
@@ -403,7 +416,20 @@ route.post("/joinTables", async (req, res) => {
     var qu = "Select * from "+ dbName+".`"+DSDNames[0]+"`;";
     const data = await query(conn, qu)
     .catch((err) => { res.status(400).send(err); })
-    res.send(data);
+    
+    //If no data, then return column names
+    if(data.length == 0)
+    {
+      const result = await query(conn, "Show columns from "+dbName+"."+DSDNames[0])
+      .catch((err) => { res.status(400).json(err); })
+      var Cols = []
+      result.map((obj)=>{Cols.push(obj["Field"])})
+      res.send(Cols);
+    }
+    else
+    {
+      res.send(data);
+    }
   }
   else
   {
@@ -434,6 +460,111 @@ route.post("/joinTables", async (req, res) => {
   }
   // res.status(200).json({ Message: 'Joined Dynamic Tables Data' });
 });
+
+
+route.post("/getColumnNames", async (req, res) => {
+  const {FormID} = req.body;
+  const conn = await connection().catch(e => { });
+  var dsdQuery = "Select * from "+ dbName+".`Form_DSD` where FormID = '"+FormID+"';";
+  const DSD = await query(conn, dsdQuery)
+    .catch((err) => { res.status(400).send(err); })
+
+  const result = await query(conn, "Show columns from "+dbName+"."+DSD[0].DSDName)
+  .catch((err) => { res.status(400).json(err); })
+  var existingCols = []
+  result.map((obj)=>{existingCols.push(obj["Field"])})
+  res.send(existingCols);
+});
+
+
+
+route.post("/getTablesData", async (req,res) =>{
+  const {mapString} = req.body;
+  const map = new Map(JSON.parse(mapString))
+  console.log(map)
+
+  const conn = await connection().catch(e => { });
+  var DSDNames = [];
+
+  for (let key of map.keys()) {
+    var dsdQuery = "Select * from "+ dbName+".`Form_DSD` where FormID = '"+key+"';";
+    const data = await query(conn, dsdQuery)
+    .catch((err) => { res.status(400).send(err); })
+    DSDNames.push(data[0].DSDName);
+  }
+
+  if(DSDNames.length == 1)
+  {
+    var qu = "Select Patient_ID_ID,";
+    for(let value of map.values())
+    {
+      for(var i=0;i<value.length;i++)
+      {
+        qu = qu + value[i] +", ";
+      }
+    }
+    qu = qu.slice(0,-2);
+    qu = qu + " from "+ dbName+".`"+DSDNames[0]+"`;";
+    const data = await query(conn, qu)
+    .catch((err) => { res.status(400).send(err); })
+    
+    //If no data, then return column names
+    if(data.length == 0)
+    {
+      const result = await query(conn, "Show columns from "+dbName+"."+DSDNames[0])
+      .catch((err) => { res.status(400).json(err); })
+      var Cols = []
+      result.map((obj)=>{Cols.push(obj["Field"])})
+      res.send(Cols);
+    }
+    else
+    {
+      res.send(data);
+    }
+  }
+  else
+  {
+    var qu ="Select "+DSDNames[0]+".Patient_ID_ID, ";
+    for(let value of map.values())
+    {
+      for(var i=0;i<value.length;i++)
+      {
+        qu = qu + value[i] +", ";
+      }
+    }
+    qu = qu.slice(0,-2);
+      
+    qu = qu + " from ";
+    for(var i=0;i<DSDNames.length;i++)
+    {
+      qu = qu+ dbName+".`"+DSDNames[i]+"` join ";
+    }
+
+    qu = qu.slice(0,-5);
+    qu = qu + "on ";
+
+    for(var i=0;i<DSDNames.length;i++)
+    {
+      if(i>1)
+      {
+        qu = qu.slice(0,-2);
+        qu = qu + "and ";
+        qu = qu + dbName+"."+DSDNames[i-1]+".Patient_ID_ID = ";
+      }
+      qu = qu + dbName+"."+DSDNames[i]+".Patient_ID_ID = ";
+    }
+    qu = qu.slice(0,-2);
+    console.log(qu);
+    const result = await query(conn, qu)
+    .catch((err) => { res.status(400).send(err); })
+    res.send(result);
+  }
+
+});
+
+
+
+
 
 
 

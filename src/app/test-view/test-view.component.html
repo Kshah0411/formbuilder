@@ -1,14 +1,14 @@
-<div class="container">
-    <h4 style="text-align: center;">Testing FInal View</h4>
+<div class="container mt-4">
+    <h4 style="text-align: center;">Final View</h4>
 </div>
 
-<div class="card card-body" *ngIf="showFirstPage">
+<!-- <div class="card card-body" *ngIf="showFirstPage">
     <p>This consent form explains the research study and your part in it.</p>
     <p>Please read it carefully and take as much time as you need.</p>
     <p>You are being asked for your consent to take part in a voluntary research study.</p>
-    <button mat-raised-button class="mt-3" color="warn" (click)="signConsent()">Start consent</button>
-</div>
-<div *ngIf="consent">
+    <button mat-raised-button class="mt-3" color="primary" (click)="signConsent()">Start consent</button>
+</div> -->
+<div>
 <mat-horizontal-stepper [linear]="isLinear" #stepper>
     <mat-step>
         <ng-template matStepLabel>Description</ng-template>
@@ -17,7 +17,7 @@
                 <p>This is Form Builder Page for Patients.</p>
                 <p>Please start the Survey by signing the Consent.</p>
             </div>
-            <button mat-raised-button class="mt-3" color="warn"
+            <button mat-raised-button class="mt-3" color="primary"
              matStepperNext>Next</button>
         </div>
     </mat-step>

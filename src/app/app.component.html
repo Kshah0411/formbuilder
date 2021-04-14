@@ -1,9 +1,29 @@
+<style>
+    mat-toolbar {
+    position: fixed;
+    position: -webkit-sticky; /* For macOS/iOS Safari */
+    top: 0; /* Sets the sticky toolbar to be on top */
+    z-index: 1;
+    }
+</style>
 <header>
-    <div class="container">
-        <h2 style="text-align: center;">Registry Builder</h2>
-    </div>
+    <mat-toolbar style="background-color: rgb(61, 156, 240);min-height: 50px !important;height: 50px !important;">
+        <mat-toolbar-row>
+            <a routerLink="/" href="" style="text-decoration: none;display: block;" class="mr-auto ml-5">
+            <span style="color:white;letter-spacing: 3px;" >
+                Registry On Go</span></a>
+
+            <a mat-flat-button aria-label="View" class="mr-2 pull-right" target="_blank" routerLink="/test" style="font-size:large;background-color:rgb(61, 156, 240);text-decoration: none;">
+                <span style="color: white;">FinalView</span>
+            </a>
+            <a mat-flat-button aria-label="Data" class="mr-5 ml-3" target="_blank" routerLink="/data" style="font-size:large;background-color:rgb(61, 156, 240);text-decoration: none;">
+                <span style="color: white;">Data</span>
+            </a>
+        </mat-toolbar-row>
+      </mat-toolbar>
+
 </header>
-<div class="container">
+<div>
     <router-outlet></router-outlet>
 </div>
 <footer>

@@ -1,0 +1,48 @@
+<style>
+    mat-grid-tile {
+        background: lightblue;
+    }
+    :host >>> .mat-figure{
+  align-items: start !important;
+    }
+
+</style>
+<div class="container">
+    <mat-grid-list cols="3" rowHeight="1:1" gutterSize="5px">
+        <mat-grid-tile>
+            <div>
+            <nav class="nav flex-column">
+                <span class="card p-2">Screens/Pages</span>
+                <a style="margin-top: 10px;background-color: beige;" [routerLink]="" (click)="screenClick(s)" class="nav-link"
+                *ngFor="let s of screens"  id="{{s.ScreenID}}">
+                    <label style="cursor: pointer;">{{s.ScreenName}}</label>
+                </a>
+            </nav>
+            </div>
+        </mat-grid-tile>
+        <mat-grid-tile *ngIf="showForms">
+            <div>
+                <nav class="nav flex-column">
+                    <span class="card p-2">Forms</span>
+                    <a style="margin-top: 10px;background-color: beige;" [routerLink]="" (click)="formClick(f)" class="nav-link"
+                    *ngFor="let f of forms"  id="{{f.FormID}}">
+                        <label style="cursor: pointer;">{{f.FormName}}</label>
+                    </a>
+                </nav>
+            </div>
+            
+        </mat-grid-tile>
+        <mat-grid-tile *ngIf="showColumns">
+            <div>
+                <nav class="nav flex-column">
+                    <span class="card p-2">{{keys['tooltips'][1]}}</span>
+                  
+                    <a style="margin-top: 10px;background-color: beige;" [routerLink]="" (click)="columnClick(f)" class="nav-link"
+                    *ngFor="let k of keys['keys'];let i =index"  id="{{k}}" >
+                        <label style="cursor: pointer;">{{keys['columns'][i]}}</label>
+                    </a>
+                </nav>
+            </div>
+        </mat-grid-tile>
+    </mat-grid-list>
+</div>

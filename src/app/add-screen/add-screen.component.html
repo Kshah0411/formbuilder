@@ -1,22 +1,22 @@
 <form  #ScreenForm="ngForm" (ngSubmit)="nextPage(ScreenForm)" style="width:80%;margin:0 auto;">
     <div class="form-group">
-        <label for="screenname">Screen Name</label>
-        <input type="input" class="form-control" id="screenname" name="screenname" placeholder="Screen Name" [(ngModel)]="model.screenname" required>
+        <label for="ScreenName">Screen Name</label>
+        <input type="input" class="form-control" id="ScreenName" name="ScreenName" placeholder="Screen Name" [(ngModel)]="model.ScreenName" required>
     </div>
     <div class="form-group">
-        <label for="screenid">Screen ID</label>
-        <input type="input" class="form-control" id="screenid" name="screenid" placeholder="Screen ID" [(ngModel)]="model.screenid" required>
+        <label for="ScreenID">Screen ID</label>
+        <input type="input" class="form-control" id="ScreenID" name="ScreenID" placeholder="Screen ID" [(ngModel)]="model.ScreenID" required>
     </div>
     <div class="form-group">
-        <label for="adminid">Admin ID</label>
-        <input type="input" class="form-control" id="adminid" name="adminid" placeholder="Admin ID" [(ngModel)]="model.adminid" required>
+        <label for="AdminID">Admin ID</label>
+        <input type="input" class="form-control" id="AdminID" name="AdminID" placeholder="Admin ID" [(ngModel)]="model.AdminID" required>
     </div>
     <!-- <div class="form-group">
         <label for="orgname">Organization Name</label>
         <input type="input" class="form-control" id="orgname" name="orgname" placeholder="Organization Name" [(ngModel)]="model.orgname" >
     </div>
     <div class="form-group">
-        <label for="screenname">Organization ID</label>
+        <label for="ScreenName">Organization ID</label>
         <input type="input" class="form-control" id="orgid" name="orgid" placeholder="Organization ID" [(ngModel)]="model.orgid" required>
     </div> -->
 
@@ -32,7 +32,7 @@
             <option value="" selected>Select a Form to Modify</option>
             <option *ngFor="let f of model.formNames" [value]="f">{{f}}</option>
           </select>
-          <label *ngIf="model.screenid === ''" class="text-danger">Screen ID Required</label>
+          <label *ngIf="model.ScreenID === ''" class="text-danger">Screen ID Required</label>
     </div>
     <div *ngIf="model.existForm" class="custom-control custom-checkbox" 
     style="margin-top: 12px;text-align:center; vertical-align:middle">

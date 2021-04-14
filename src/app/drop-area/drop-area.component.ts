@@ -31,12 +31,21 @@ export class DropAreaComponent implements OnInit {
     
     this.clickFormViewsubscription = this.fetchService.getFormClickEvent()
     .subscribe((res)=>{
-      // console.log(res);
-      this.breadCrumbScreen = res["screen"]["ScreenName"];
-      this.breadCrumbForm = res["form"]["FormName"];
+      
+      if(JSON.stringify(res["form"]) !== "{}"){
+        this.breadCrumbScreen = res["screen"]["ScreenName"];
+        this.breadCrumbForm = res["form"]["FormName"];
 
-      this.fetchService.screenData["existForm"] = true;
-      this.formDisplay(res["form"],res["screen"]);
+        this.fetchService.screenData["existForm"] = true;
+        this.formDisplay(res["form"],res["screen"]);
+      }
+      else{
+        this.breadCrumbScreen = '';
+        this.breadCrumbForm = '';
+        this.model.name = "Form name...";
+        this.model.description = "Form Description...";
+        this.model.attributes = [];
+      }
     })
   }
 
@@ -320,10 +329,21 @@ export class DropAreaComponent implements OnInit {
     };
   }
 
+  ngOnDestroy(){
+    this.clickFormViewsubscription.unsubscribe();
+  }
   ngOnInit() {
     console.log("in ngOnINit");
+    //To view Form for the first time, and then after this, always click event will happen in constructor
+    this.breadCrumbScreen = this.fetchService.res["screen"]["ScreenName"];
+    this.breadCrumbForm = this.fetchService.res["form"]["FormName"];
 
+    this.fetchService.screenData["existForm"] = true;
+    this.formDisplay(this.fetchService.res["form"],this.fetchService.res["screen"]);
+
+    this.fetchService.res = {};
     this.model.attributes = [];
+
     if (this.fetchService.screenData["existForm"]) {
       // var fieldsArr = [];
 
@@ -362,9 +382,9 @@ export class DropAreaComponent implements OnInit {
   formDisplay(form, screen) {	
    
     var model = {	
-      'screenname': screen.ScreenName,	
-      'screenid': screen.ScreenID,	
-      'adminid': screen.CreatedBy,	
+      'ScreenName': screen.ScreenName,	
+      'ScreenID': screen.ScreenID,	
+      'AdminID': screen.CreatedBy,	
       'existForm': true,	
       'existTable': true,	
       'formName': form.FormName,	
@@ -400,8 +420,8 @@ export class DropAreaComponent implements OnInit {
 
   deleteOption() {
     swal({
-      title: "Delete Template?",
-      text: "Do you want to Delete this Template?",
+      title: "Delete Form?",
+      text: "Do you want to Remove this Form from this Page?",
       type: "question",
       showCancelButton: true,
       confirmButtonColor: "#00B96F",
@@ -410,16 +430,16 @@ export class DropAreaComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
 
-        swal({
-          title: "There is some data that has been previously acquired by this "+this.fetchService.screenData["formName"],
-          text: " Please select an option",
-          type: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#00B96F",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Keep Data and Delete this form",
-          cancelButtonText:"Delete both Data and Form",
-        }).then((res) => {
+        // swal({
+        //   title: "There is some data that has been previously acquired by this "+this.fetchService.screenData["formName"],
+        //   text: " Please select an option",
+        //   type: "warning",
+        //   showCancelButton: true,
+        //   confirmButtonColor: "#00B96F",
+        //   cancelButtonColor: "#d33",
+        //   confirmButtonText: "Keep Data and Delete this form",
+        //   cancelButtonText:"Delete both Data and Form",
+        // }).then((res) => {
           for (var i = 0;i < this.fetchService.screenData["forms"].length;i++)
               {
                 if (this.fetchService.screenData["formName"] === 
@@ -432,7 +452,7 @@ export class DropAreaComponent implements OnInit {
                       //   .subscribe((res) => {
                       //     console.log(res);
                       //   });
-                      this.fetchService.postArchived(this.fetchService.screenData["screenid"],this.fetchService.screenData["forms"][i].ScreenFormID,ress[0].DSDName)
+                      this.fetchService.postArchived(this.fetchService.screenData["ScreenID"],this.fetchService.screenData["forms"][i].ScreenFormID,ress[0].DSDName)
                       .subscribe((res) => {
                         console.log(res);
 
@@ -446,12 +466,12 @@ export class DropAreaComponent implements OnInit {
                     break;
                 }
               }
-              swal('Deleted!','Your Template has been deleted Completely.','success');
+              swal('Deleted!','Your Form has been Removed.','success');
 
           this.model.name = "Form name...";
           this.model.description = "Form Description...";
           this.model.attributes = [];
-        });
+        // });
       }
     });
   }
@@ -512,25 +532,25 @@ export class DropAreaComponent implements OnInit {
   async saveForm() {
 
     if(this.fetchService.screenData["existForm"]){
-    await swal({
-      title: "Do you want to use the Existing Dynamic Table to Store Form Data?",
-      text: "Select an option",
-      type: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#00B96F",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-      cancelButtonText:"No",
-    }).then((res) => {
-      if(res.value)
-      {
-        this.fetchService.screenData["existTable"] = true;
-      }
-      else
-      {
-        this.fetchService.screenData["existTable"] = false;
-      }
-    });
+      await swal({
+        title: "Do you want to use the Existing Dynamic Table to Store Form Data?",
+        text: "Select an option",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#00B96F",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes",
+        cancelButtonText:"No",
+      }).then((res) => {
+        if(res.value)
+        {
+          this.fetchService.screenData["existTable"] = true;
+        }
+        else
+        {
+          this.fetchService.screenData["existTable"] = false;
+        }
+      });
     }
 
     //Form ID generator
@@ -631,7 +651,7 @@ export class DropAreaComponent implements OnInit {
           screens.push(obj.ScreenID);
         });	
 
-        if(screens.includes(this.fetchService.screenData["screenid"]))
+        if(screens.includes(this.fetchService.screenData["ScreenID"]))
         {
           this.postForm();
         }
@@ -648,7 +668,6 @@ export class DropAreaComponent implements OnInit {
       });
            
     }
-    
     this.viewForm = true;
   }
 
@@ -662,11 +681,12 @@ export class DropAreaComponent implements OnInit {
             console.log(res);
       });
     }
-    this.fetchService.postScreenForm(this.newFormID,this.fetchService.screenData["screenid"],this.model.name,this.model.description)
+    console.log(this.fetchService.screenData);
+    this.fetchService.postScreenForm(this.newFormID,this.fetchService.screenData["ScreenID"],this.model.name,this.model.description)
     .subscribe((data: {}) => {
       console.log(data);
 
-      this.fetchService.postForm(this.newFormID,this.model.name,this.fetchService.screenData["adminid"],"Yes","No")
+      this.fetchService.postForm(this.newFormID,this.model.name,this.fetchService.screenData["AdminID"],"Yes","No")
         .subscribe((data: {}) => {
           console.log(data);
 
@@ -699,7 +719,7 @@ export class DropAreaComponent implements OnInit {
               });
 
               for(var i=0;i<labels.length;i++){
-                labels[i] = this.fetchService.screenData["screenname"]+"_"+this.model.name.replace(/\s+/g, "_")+"_"+labels[i];
+                labels[i] = this.fetchService.screenData["ScreenName"]+"_"+this.model.name.replace(/\s+/g, "_")+"_"+labels[i];
               }
 
               this.fetchService.alterDynamicTable(ress[0].DSDName, labels)
@@ -732,7 +752,7 @@ export class DropAreaComponent implements OnInit {
               });
 
               for(var i=0;i<labels.length;i++){
-                labels[i] = this.fetchService.screenData["screenname"]+"_"+this.model.name.replace(/\s+/g, "_")+"_"+labels[i];
+                labels[i] = this.fetchService.screenData["ScreenName"]+"_"+this.model.name.replace(/\s+/g, "_")+"_"+labels[i];
               }
 
             this.fetchService.createDynamicTable(dynamictable, labels)

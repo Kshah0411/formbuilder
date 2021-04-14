@@ -21,17 +21,27 @@ export class FetcherService {
   public formsFromAddScreen = [];
   public formData: any;
   public formFields = [];
+  public TreeData = [];
   
   constructor(private httpClient: HttpClient) { }
 
   private subject = new Subject<any>();
-  private subject1 = new Subject<any>();
+  private formSelect = new Subject<any>();
+  private RefreshTree = new Subject<any>();
+  public res = {};
+    sendRefreshTree(tree) { //the component that wants to update something, calls this fn
+        this.RefreshTree.next(tree); //next() will feed the value in Subject
+    }
+
+    getRefreshTree(): Observable<any> { //the receiver component calls this function 
+        return this.RefreshTree.asObservable(); //it returns as an observable to which the receiver funtion will subscribe
+    }
 
   sendFormClickEvent(form,screen) {
-    this.subject1.next({form:form,screen:screen});
+    this.formSelect.next({form:form,screen:screen});
   }
   getFormClickEvent(): Observable<any>{ 
-    return this.subject1.asObservable();
+    return this.formSelect.asObservable();
   }
   
   sendAddScreenEvent(screenName){
@@ -41,108 +51,13 @@ export class FetcherService {
     return this.subject.asObservable();
   }
 
-  //----------------------------- OLD SERVICES  -----------------
-
-  // createDB(name)
-  // {
-  //   const body = {"orgName":name}
-  //   return this.httpClient.post<any>(this.url+"/createDB",body)
-  //       .pipe(retry(1), catchError(this.handleError));
-  // }
-
-  // async createScreen()
-  // {
-  //   const body={}
-  //   return await this.httpClient.post<any>(this.url+"/createScreen",body)
-  //     .pipe(retry(1), catchError(this.handleError));
-  // }
-
-  // public version = 1;
-  // async postScreen(data)
-  // {
-  //   const body = {"version": this.version,"orgName":data.orgname,"orgID":data.adminid,"screenName":data.screenname,"screenID":data.screenid};
-  //   return await this.httpClient.post<any>(this.url+"/postScreen",body)
-  //       .pipe(retry(1),catchError(this.handleError));
-  // }
-
-
-  // async createMeta(formName)
-  // {
-  //   const body = {"formName":formName}
-  //   return await this.httpClient.post<any>(this.url+"/createMeta",body)
-  //     .pipe(retry(1),catchError(this.handleError));
-  // }
-  // async postMeta(formName,formVersion,formID,formJSON,screenID)
-  // {
-  //   const body = {"formName": formName,"formVersion":formVersion,"formID":formID,"formJSON":formJSON,"screenID":screenID};
-  //   return await this.httpClient.post<any>(this.url+"/postMeta",body)
-  //       .pipe(retry(1), catchError(this.handleError));
-  // }
-
-  // putMeta(dbName,formName,formID,formJSON)
-  // {
-  //   const body = {"dbName":dbName,"formName": formName,"formID":formID,"formJSON":formJSON};
-  //   return this.httpClient.put<any>(this.url+"/putMeta",body)
-  //       .pipe(retry(1), catchError(this.handleError));
-  // }
-
-  // getMeta(dbName,formName,screenID)
-  // {
-  //   return this.httpClient.get<any>(this.url+"/getMeta/"+dbName+"&"+formName+"&"+screenID)
-  //       .pipe(retry(1), catchError(this.handleError));
-  // }
-
-
-  // async createForm(body)
-  // {
-  //   return await this.httpClient.post<any>(this.url+"/createForm",body)
-  //     .pipe(retry(1),catchError(this.handleError));
-  // }
-
-  // postForm(body)
-  // {
-  //   return this.httpClient.post<any>(this.url+"/postForm",body)
-  //     .pipe(catchError(this.handleError));
-  // }
-
-  // alterForm(body)
-  // {
-  //   return this.httpClient.post<any>(this.url+"/putCols",body)
-  //     .pipe(catchError(this.handleError));
-  // }
-  
-  // getForms(): Observable< any > {
-  //   return new Observable(observer => {
-  //     this.httpClient.get(this.url+"/getMeta")
-  //       .subscribe(res => {
-  //         observer.next( res);
-  //       }, err => {
-  //         observer.error(err);
-  //       });
-  //   });
-  // }
-
-  // putForms(model): Observable< any > {
-    
-  //   return new Observable(observer => {
-  //     this.httpClient.post(this.url+"/postMeta/",model)
-  //       .subscribe(res => {
-  //         observer.next( res);
-  //       }, err => {
-  //         observer.error(err);
-  //       });
-  //   });
-  // }
-
-
-
 
   //------------------- NEW Services for NEW Schema -----------------
 
   postScreen(data, Display, Modified)
   {
-    const body = {"ScreenID":data.screenid,"ScreenName":data.screenname,
-      "CreatedBy":data.adminid, "Display":Display, "Modified":Modified, "OrderNo":data.OrderNo};
+    const body = {"ScreenID":data.ScreenID,"ScreenName":data.ScreenName,
+      "CreatedBy":data.AdminID, "Display":Display, "Modified":Modified, "OrderNo":data.OrderNo};
     return this.httpClient.post<any>(this.url+"/postScreen",body)
         .pipe(catchError(this.handleError));
   }
@@ -281,6 +196,20 @@ export class FetcherService {
   {
     const body = {"ScreenID":ScreenID,"FormID":FormID};
     return this.httpClient.post<any>(this.url+"/joinTables",body)
+      .pipe(catchError(this.handleError));
+  }
+
+  getColumnNames(FormID)
+  {
+    const body = {"FormID":FormID};
+    return this.httpClient.post<any>(this.url+"/getColumnNames",body)
+      .pipe(catchError(this.handleError));
+  }
+
+  getTablesData(map)
+  {
+    const body = {"mapString":map};
+    return this.httpClient.post<any>(this.url+"/getTablesData",body)
       .pipe(catchError(this.handleError));
   }
 

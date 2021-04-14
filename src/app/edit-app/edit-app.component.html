@@ -5,14 +5,14 @@
             <!-- <button (click)="initReport()" class="btn btn-primary pull-left">Response</button> -->
             <!-- <button (click)="addForm()" class="btn btn-primary pull-right" style="margin-left:3px;">Add Form</button> -->
             <!-- <button (click)="updateForm()" class="btn btn-primary pull-right">Update</button> -->
-            <a routerLink="/test" target="_blank" class="btn btn-success pull-right" style="margin-right:3px;">View <i class="fa fa-external-link"></i></a>
+            <!-- <a routerLink="/test" target="_blank" class="btn btn-success pull-right" style="margin-right:3px;">View <i class="fa fa-external-link"></i></a> -->
           
           </div>
     </div>
   </div>
   <div class="spacer30"></div>
 
-  <div class="row">
+  <div class="row ml-2 mr-1">
     <div [class]="step1class">	
       <div *ngIf="getScreens && getScreens.length < 1">
         <span>No Pages Yet</span>
@@ -31,30 +31,31 @@
           </div>
         </div>	
       </div>
-      <button type="button" class="btn btn-success btn-sm btngreen" (click)="openPopup(content)"><i class="fa fa-plus"></i>&nbsp;Add Screen</button>	
+      <button type="button" class="btn btn-success btn-sm btngreen" (click)="openPopup(content)"><i class="fa fa-plus"></i>&nbsp;Add a Page</button>	
     </div>
-
+      
     <div [class]="step2class" style="border-left: 1px solid lightblue;" *ngIf="step>1">
       <h4>{{screen.ScreenName}} - Forms</h4>
       <div class="formslist">
         <ul>	
-          <li *ngFor="let form of getForms">	
-            <button type="button" class="btn btn-sm" (click)="formDisplay(form, screen)">{{form.FormName}}</button>	
+          <li *ngFor="let form of getForms" (click)="formDisplay(form, screen)" style="cursor: pointer;">	
+            <button type="button" class="btn btn-sm">{{form.FormName}}</button>	
           </li>	
         </ul>
       </div>
       <button type="button" class="btn btn-success btn-sm btngreen" data-toggle="tooltip" data-placement="top" title="Add form in {{screen.ScreenName}}" (click)="addScreenForm()"><i class="fa fa-plus"></i>&nbsp;Add Form</button>
     </div>
-  
-    <div [class]="step3class" style="border-left: 1px solid lightblue;" *ngIf="step>2">
+      
+    <div [class]="step3class" style="border-left: 1px solid lightblue;height:500px;overflow-y: scroll;" *ngIf="step>2">
       <div *ngFor="let drop of dropArr.slice().reverse()" style="margin-top:70px;">
-        <app-drop-area [indexval]="drop"   [viewForm]="viewForm" (newItemEvent)='formStatus($event)'></app-drop-area>
+        <app-drop-area [indexval]="drop" [viewForm]="viewForm" (newItemEvent)='formStatus($event)'></app-drop-area>
       </div>
     </div>
-
-    <div [class]="step4class" style="border-left: 1px solid lightblue;" *ngIf="step>3">
+      
+    <div [class]="step4class" style="border-left: 1px solid lightblue;height:500px;overflow-y: scroll;" *ngIf="step>3">
       <h4 (click)="test()" style="margin-top: 30px;">Select Fields</h4>
       <p>Customize your form by drag and drop below fields to the form area.</p>
+      <!--a draggable element-->
       <div class="fields" *ngFor="let item of fieldModels">
         <div class="field pointer shadow-bg" [dndDraggable]="item"
         [dndEffectAllowed]="'copy'" [dndDisableIf]="viewForm"
@@ -64,6 +65,12 @@
         </div>
       </div>
     </div>
+    <style>
+      .scrollbar::-webkit-scrollbar {
+      width: 0;  /* Remove scrollbar space */
+      background: transparent;  /* just make scrollbar invisible */
+    }
+    </style>
 
   </div>
 </div>
@@ -71,7 +78,7 @@
 
 <ng-template #content let-c="close" let-d="dismiss">	
   <div class="modal-header">	
-    <h4 class="modal-title" id="modal-basic-title">Add a Screen</h4>	
+    <h4 class="modal-title" id="modal-basic-title">Add a Page</h4>	
     <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">	
       <span aria-hidden="true">&times;</span>	
     </button>	

@@ -36,6 +36,15 @@ import { MatSortModule } from '@angular/material/sort';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { MatTableExporterModule } from 'mat-table-exporter';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatTreeModule} from '@angular/material/tree';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatExpansionModule} from '@angular/material/expansion';
+
+import { DataComponent } from './data/data.component';
+import { DataViewComponent } from './data-view/data-view.component';
+import { TreeViewComponent } from './tree-view/tree-view.component';
 
 
 const appRoutes: Routes = [
@@ -52,7 +61,10 @@ const appRoutes: Routes = [
     AddScreenComponent,
     NotfoundComponent,
     TestViewComponent,
-    ViewDataComponent
+    ViewDataComponent,
+    DataComponent,
+    DataViewComponent,
+    TreeViewComponent
   ],
   imports: [
     RouterModule.forRoot(appRoutes),
@@ -70,6 +82,7 @@ const appRoutes: Routes = [
     MatStepperModule,MatTabsModule,MatButtonModule,MatAutocompleteModule, MatTableModule,
     MatSelectModule,MatFormFieldModule, MatPaginatorModule, MatInputModule, MatCheckboxModule,
     MatChipsModule,MatIconModule,MatSortModule, MatTooltipModule,MatTableExporterModule,MatMenuModule,
+    MatSidenavModule,MatGridListModule, MatTreeModule,MatToolbarModule, MatExpansionModule,
   ],
   providers: [FetcherService],
   bootstrap: [AppComponent]

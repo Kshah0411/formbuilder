@@ -222,7 +222,9 @@ export class EditAppComponent implements OnInit {
   }	
   closePopup(data) {	
     this.modalService.dismissAll();	
-    this.showStep2(this.fetchService.screenData);
+    this.getForms = [];
+    this.screen = this.fetchService.screenData;
+    this.showStep2(this.screen);
   }
 
  
@@ -313,11 +315,11 @@ export class EditAppComponent implements OnInit {
   getScreensData() {	
     this.fetchService.getScreens().subscribe((data) => {	
       this.getScreens = data;	
-      // this.getScreens.forEach(obj => {
-      //   obj.show = false;	
-      // });		
+      		
     });	
+    
   }	
+
 
   getFormData(screen){
     this.getForms = [];
@@ -335,13 +337,14 @@ export class EditAppComponent implements OnInit {
     this.step = 2;
     this.screen = [];
     this.screen = screen;
-    this.step1class = 'col-3';
-    this.step2class = 'col-9';
+    this.step1class = 'col-4';
+    this.step2class = 'col-4';
   }
   	
   formStatus(status){	
-    this.viewForm = status;
+    this.viewForm = status;	
     this.showStep4();
+
   }
 
   showStep4(){	
@@ -353,24 +356,27 @@ export class EditAppComponent implements OnInit {
   }
 
   formDisplay(form, screen) {	
+    // console.log(form)
+    // console.log(screen)
     this.fetchService.sendFormClickEvent(form,screen);
     this.viewForm = true;
+    this.fetchService.res = {"form":form,"screen":screen};
     this.showStep3();
   }	
-
-	showStep3(){
+	
+  showStep3(){
     this.step = 3;
-    this.step1class = 'col-3';
-    this.step2class = 'col-3';
-    this.step3class = 'col-6';
+    this.step1class = 'col-2';
+    this.step2class = 'col-2';
+    this.step3class = 'col-8';
   }
 
   addScreenForm() {	
     swal("New Form in the '"+this.screen.ScreenID+"' screen?");
     var model = {	
-      'screenname': this.screen.ScreenName,	
-      'screenid': this.screen.ScreenID,	
-      'adminid': this.screen.CreatedBy,	
+      'ScreenName': this.screen.ScreenName,	
+      'ScreenID': this.screen.ScreenID,	
+      'AdminID': this.screen.CreatedBy,	
       'existForm': false,	
       'existTable': false,	
       'formName': '',	
@@ -378,6 +384,8 @@ export class EditAppComponent implements OnInit {
       'forms': []	
     };	
     this.fetchService.screenData = model;	
+    this.fetchService.sendFormClickEvent({},{});
+    this.viewForm = false;
     this.showStep4();
   }
   

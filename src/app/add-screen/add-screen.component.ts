@@ -19,21 +19,31 @@ export class AddScreenComponent implements OnInit {
     private fetchService:FetcherService) { }
 
   model: any = {
-    'screenname': '',
-    'screenid': '',
-    'adminid': '',
+    'ScreenName': '',
+    'ScreenID': '',
+    'AdminID': '',
     'existForm':false,
     'existTable':false,
     'formName':'',
     'formNames':[],
     'forms':[]
   };
+  formModel: any = {
+    name: "Form name...",
+    description: "Form Description...",
+    theme: {
+      bgColor: "ffffff",
+      textColor: "555555",
+      bannerImage: "",
+    },
+    attributes: '',
+  };
 
   prevScreenID = ""
   ngOnInit(): void {
     if(JSON.stringify(this.fetchService.screenData) !== '{}')
     {
-      this.model.adminid = this.fetchService.screenData["adminid"];
+      this.model.AdminID = this.fetchService.screenData["AdminID"];
     }
   }
 
@@ -46,10 +56,10 @@ export class AddScreenComponent implements OnInit {
 
   FormTemplates():void
   {
-    if(this.prevScreenID !== this.model.screenid && this.model.screenid !== '')
+    if(this.prevScreenID !== this.model.ScreenID && this.model.ScreenID !== '')
     {
       this.model.formNames = [];
-      this.fetchService.getForm(this.model.screenid)
+      this.fetchService.getForm(this.model.ScreenID)
       .subscribe((res) => {
         
         res.map((data) => {
@@ -59,18 +69,19 @@ export class AddScreenComponent implements OnInit {
 
       });
     }
-    if(this.model.screenid === '')
+    if(this.model.ScreenID === '')
     {
       this.model.formNames = [];
       this.model.forms = [];
     }
       
-    this.prevScreenID = this.model.screenid;
+    this.prevScreenID = this.model.ScreenID;
   }
 
   
   async nextPage(screenForm:NgForm) {
     this.fetchService.screenData = this.model;
+    this.fetchService.res = {"form":this.formModel,"screen":this.model};
     if(this.popup) {	
       this.newItemEvent.emit('close');	
     } else {	
@@ -79,7 +90,7 @@ export class AddScreenComponent implements OnInit {
     this.fetchService.screenData["existForm"] = false;
     swal("Please Add a Form")
     
-    this.fetchService.sendAddScreenEvent(this.model.screenname);
+    this.fetchService.sendAddScreenEvent(this.model.ScreenName);
   }
 
 }
