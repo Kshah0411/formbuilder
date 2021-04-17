@@ -11,36 +11,6 @@
         <label for="AdminID">Admin ID</label>
         <input type="input" class="form-control" id="AdminID" name="AdminID" placeholder="Admin ID" [(ngModel)]="model.AdminID" required>
     </div>
-    <!-- <div class="form-group">
-        <label for="orgname">Organization Name</label>
-        <input type="input" class="form-control" id="orgname" name="orgname" placeholder="Organization Name" [(ngModel)]="model.orgname" >
-    </div>
-    <div class="form-group">
-        <label for="ScreenName">Organization ID</label>
-        <input type="input" class="form-control" id="orgid" name="orgid" placeholder="Organization ID" [(ngModel)]="model.orgid" required>
-    </div> -->
-
-
-    <!-- <div style="text-align:center; vertical-align:middle" class="custom-control custom-checkbox">
-        <input type="checkbox" id="existForm" name="existForm" class="custom-control-input"
-        [(ngModel)]="model.existForm" (click)="FormTemplates()">
-        <label for="existForm" style="display: inline-block;margin-left: 15px;" class="custom-control-label">
-            Check this to use/modify Existing Forms</label>
-    </div>
-    <div *ngIf="model.existForm" style="margin-top: 12px;">
-        <select class="form-control" id="formName" name="formName" [(ngModel)]="model.formName" required>
-            <option value="" selected>Select a Form to Modify</option>
-            <option *ngFor="let f of model.formNames" [value]="f">{{f}}</option>
-          </select>
-          <label *ngIf="model.ScreenID === ''" class="text-danger">Screen ID Required</label>
-    </div>
-    <div *ngIf="model.existForm" class="custom-control custom-checkbox" 
-    style="margin-top: 12px;text-align:center; vertical-align:middle">
-        <input type="checkbox" id="existTable" name="existTable" class="custom-control-input"
-        [(ngModel)]="model.existTable" >
-        <label for="existTable" style="display: inline-block;margin-left: 15px;" class="custom-control-label">
-            Check this to use the Existing Dynamic Table to Store Form Data</label>
-    </div> -->
     
     <div style="text-align: center;" class="mt-4">
         <button type="reset" class="btn btn-secondary">Clear</button>

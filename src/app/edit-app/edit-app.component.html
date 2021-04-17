@@ -13,8 +13,24 @@
   <div class="spacer30"></div>
 
   <div class="row ml-2 mr-1">
-    <div [class]="step1class">	
-      <div *ngIf="getScreens && getScreens.length < 1">
+    <!-- <div [class]="step1class" *ngIf="step == 1"> -->
+      <div [class]="step1class" *ngIf="step<3">
+      <div class="container ml-7 mr-7 mt-4 mb-3">
+        <ngb-carousel #carousel [interval]="2100" pauseOnHover="true" pauseOnFocus="true" 
+        style="background-color: rgb(197, 248, 248);height: 17em;">
+          <ng-template ngbSlide>
+              <div style="text-align: center;">
+                <h2>First Slide</h2>
+              </div>
+          </ng-template>
+          <ng-template ngbSlide>
+              <div style="text-align: center;">
+                <h2>Second Slide</h2>
+              </div>
+          </ng-template>
+        </ngb-carousel>
+      </div>	
+      <div *ngIf="getScreens && getScreens.length < 1" class="mt-2" style="text-align: center;">
         <span>No Pages Yet</span>
       </div>
       <div *ngIf="getScreens && getScreens.length > 0">
@@ -31,7 +47,8 @@
           </div>
         </div>	
       </div>
-      <button type="button" class="btn btn-success btn-sm btngreen" (click)="openPopup(content)"><i class="fa fa-plus"></i>&nbsp;Add a Page</button>	
+      <button type="button" class="btn btn-success btn-sm btngreen mt-2" (click)="openPopup(content)">
+        <i class="fa fa-plus"></i>&nbsp;Add a Page</button>	
     </div>
       
     <div [class]="step2class" style="border-left: 1px solid lightblue;" *ngIf="step>1">
@@ -43,16 +60,17 @@
           </li>	
         </ul>
       </div>
-      <button type="button" class="btn btn-success btn-sm btngreen" data-toggle="tooltip" data-placement="top" title="Add form in {{screen.ScreenName}}" (click)="addScreenForm()"><i class="fa fa-plus"></i>&nbsp;Add Form</button>
+      <button type="button" class="btn btn-success btn-sm btngreen mt-2" data-toggle="tooltip" data-placement="top"
+       title="Add form in {{screen.ScreenName}}" (click)="addScreenForm()"><i class="fa fa-plus"></i>&nbsp;Add Form</button>
     </div>
       
-    <div [class]="step3class" style="border-left: 1px solid lightblue;height:500px;overflow-y: scroll;" *ngIf="step>2">
+    <div [class]="step3class" style="border-left: 1px solid lightblue;height:500px;overflow-y: scroll;" class="scrollbar" *ngIf="step>2">
       <div *ngFor="let drop of dropArr.slice().reverse()" style="margin-top:70px;">
         <app-drop-area [indexval]="drop" [viewForm]="viewForm" (newItemEvent)='formStatus($event)'></app-drop-area>
       </div>
     </div>
       
-    <div [class]="step4class" style="border-left: 1px solid lightblue;height:500px;overflow-y: scroll;" *ngIf="step>3">
+    <div [class]="step4class" style="border-left: 1px solid lightblue;height:500px;overflow-y: scroll;" class="scrollbar" *ngIf="step>3">
       <h4 (click)="test()" style="margin-top: 30px;">Select Fields</h4>
       <p>Customize your form by drag and drop below fields to the form area.</p>
       <!--a draggable element-->
@@ -66,10 +84,29 @@
       </div>
     </div>
     <style>
-      .scrollbar::-webkit-scrollbar {
-      width: 0;  /* Remove scrollbar space */
-      background: transparent;  /* just make scrollbar invisible */
-    }
+      .scrollbar::-webkit-scrollbar-track
+      {
+        background-color: #F5F5F5;
+        border-radius: 10px;
+      }
+
+      .scrollbar::-webkit-scrollbar
+      {
+        width: 10px;
+        background-color: #F5F5F5;
+      }
+
+      .scrollbar::-webkit-scrollbar-thumb
+      {
+        border-radius: 10px;
+        background-color: #FFF;
+        background-image: -webkit-gradient(linear,
+                          40% 0%,
+                          75% 84%,
+                          from(#c9cfc9),
+                          to(#c9cfc9),
+                          color-stop(.6,#c9cfc9))
+      }
     </style>
 
   </div>

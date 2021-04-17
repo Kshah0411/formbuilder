@@ -22,7 +22,6 @@ export class DropAreaComponent implements OnInit {
 
   constructor(private fetchService: FetcherService) 
   {
-    
     this.clickAddScreensubscription = this.fetchService.getAddScreenEvent()
     .subscribe((res) => {
       this.breadCrumbScreen = res;
@@ -31,7 +30,7 @@ export class DropAreaComponent implements OnInit {
     
     this.clickFormViewsubscription = this.fetchService.getFormClickEvent()
     .subscribe((res)=>{
-      
+
       if(JSON.stringify(res["form"]) !== "{}"){
         this.breadCrumbScreen = res["screen"]["ScreenName"];
         this.breadCrumbForm = res["form"]["FormName"];
@@ -45,6 +44,7 @@ export class DropAreaComponent implements OnInit {
         this.model.name = "Form name...";
         this.model.description = "Form Description...";
         this.model.attributes = [];
+        this.fetchService.screenData["existForm"] = false;
       }
     })
   }
@@ -332,46 +332,32 @@ export class DropAreaComponent implements OnInit {
   ngOnDestroy(){
     this.clickFormViewsubscription.unsubscribe();
   }
+
   ngOnInit() {
     console.log("in ngOnINit");
-    //To view Form for the first time, and then after this, always click event will happen in constructor
-    this.breadCrumbScreen = this.fetchService.res["screen"]["ScreenName"];
-    this.breadCrumbForm = this.fetchService.res["form"]["FormName"];
 
-    this.fetchService.screenData["existForm"] = true;
-    this.formDisplay(this.fetchService.res["form"],this.fetchService.res["screen"]);
+    // if (this.fetchService.res["screen"].existForm) {
+    //   this.fetchService.model = this.model;
+    // }
+    // else{
+    //   this.model = this.fetchService.res["form"];
+    // }
+    if(JSON.stringify(this.fetchService.res["form"]) !== "{}"){
+      this.breadCrumbScreen = this.fetchService.res["screen"]["ScreenName"];
+      this.breadCrumbForm = this.fetchService.res["form"]["FormName"];
 
-    this.fetchService.res = {};
-    this.model.attributes = [];
-
-    if (this.fetchService.screenData["existForm"]) {
-      // var fieldsArr = [];
-
-      //For each form, get all fields
-      // for (var i = 0; i < this.fetchService.screenData["forms"].length; i++) {
-      //   if (this.fetchService.screenData["formName"] === this.fetchService.screenData["forms"][i].FormName)
-      //   {
-      //     this.model.attributes = this.modelFields;
-      //     this.model.name = this.fetchService.screenData["forms"][i].FormName;
-      //     this.model.description = this.fetchService.screenData["forms"][i].FormDesc;
-      //     this.fetchService.getFormFields(this.fetchService.screenData["forms"][i].ScreenFormID)
-      //       .subscribe((fields) =>
-      //       {
-      //         for (var i = 0; i < fields.length; i++)
-      //         {
-      //           fieldsArr.push(JSON.parse(fields[i].FieldJSON));
-      //         }
-      //         this.model.attributes = fieldsArr;
-      //       });
-      //   }
-      // }
-      
-      this.fetchService.model = this.model;
+      this.fetchService.screenData["existForm"] = true;
+      this.formDisplay(this.fetchService.res["form"],this.fetchService.res["screen"]);
     }
-    else
-    {
-      this.model.attributes = []
+    else{
+      this.breadCrumbScreen = '';
+      this.breadCrumbForm = '';
+      this.model.name = "Form name...";
+      this.model.description = "Form Description...";
+      this.model.attributes = [];
+      this.fetchService.screenData["existForm"] = false;
     }
+
     if(this.fetchService.formFields.length > 0)
       this.model.attributes = this.fetchService.formFields;
     
@@ -380,7 +366,6 @@ export class DropAreaComponent implements OnInit {
 
   //Getting called from Edit Component & getting click event in this constructor using Subscription
   formDisplay(form, screen) {	
-   
     var model = {	
       'ScreenName': screen.ScreenName,	
       'ScreenID': screen.ScreenID,	
@@ -430,16 +415,6 @@ export class DropAreaComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
 
-        // swal({
-        //   title: "There is some data that has been previously acquired by this "+this.fetchService.screenData["formName"],
-        //   text: " Please select an option",
-        //   type: "warning",
-        //   showCancelButton: true,
-        //   confirmButtonColor: "#00B96F",
-        //   cancelButtonColor: "#d33",
-        //   confirmButtonText: "Keep Data and Delete this form",
-        //   cancelButtonText:"Delete both Data and Form",
-        // }).then((res) => {
           for (var i = 0;i < this.fetchService.screenData["forms"].length;i++)
               {
                 if (this.fetchService.screenData["formName"] === 
@@ -448,10 +423,6 @@ export class DropAreaComponent implements OnInit {
                   this.fetchService.getFormDSD(this.fetchService.screenData["forms"][i].ScreenFormID)
                     .subscribe((ress) => {
 
-                      // this.fetchService.DropTable(ress[0].DSDName)
-                      //   .subscribe((res) => {
-                      //     console.log(res);
-                      //   });
                       this.fetchService.postArchived(this.fetchService.screenData["ScreenID"],this.fetchService.screenData["forms"][i].ScreenFormID,ress[0].DSDName)
                       .subscribe((res) => {
                         console.log(res);
@@ -471,7 +442,6 @@ export class DropAreaComponent implements OnInit {
           this.model.name = "Form name...";
           this.model.description = "Form Description...";
           this.model.attributes = [];
-        // });
       }
     });
   }
@@ -509,13 +479,7 @@ export class DropAreaComponent implements OnInit {
     let input = new FormData();
     input.append("formId", this.model._id);
     input.append("attributes", JSON.stringify(this.model.attributes));
-    // this.us.postDataApi('/user/formFill',input).subscribe(r=>{
-    //   console.log(r);
-    //   swal('Success','You have contact sucessfully','success');
-    //   this.success = true;
-    // },error=>{
-    //   swal('Error',error.message,'error');
-    // });
+
   }
 
   addValue(values) {
@@ -531,7 +495,8 @@ export class DropAreaComponent implements OnInit {
 
   async saveForm() {
 
-    if(this.fetchService.screenData["existForm"]){
+    if(JSON.stringify(this.fetchService.res["form"]) !== "{}" && this.fetchService.screenData["existForm"]){
+      this.fetchService.screenData["existForm"] = true;
       await swal({
         title: "Do you want to use the Existing Dynamic Table to Store Form Data?",
         text: "Select an option",
@@ -563,7 +528,7 @@ export class DropAreaComponent implements OnInit {
       ("00" + date.getSeconds()).slice(-2);
     
     console.log(this.newFormID);
- 
+
     //If not existing form, then post screen data
     if (this.fetchService.screenData["existForm"])
     {
@@ -623,7 +588,7 @@ export class DropAreaComponent implements OnInit {
                               confirmButtonText: "OK",
                             }).then((res) => {
                               setTimeout(function () {
-                                location.reload();
+                                //location.reload();
                               }, 1500);
                             })
                           });
@@ -644,7 +609,6 @@ export class DropAreaComponent implements OnInit {
     }
     else
     {
-      //console.log(this.fetchService.screenData)
       this.fetchService.getScreens().subscribe((data) => {
         var screens = []	
         data.forEach(obj => {	
@@ -658,6 +622,7 @@ export class DropAreaComponent implements OnInit {
         else
         {
           this.fetchService.screenData["OrderNo"] = screens.length + 1;
+          console.log(this.fetchService.res)
           this.fetchService.postScreen(this.fetchService.screenData, "Yes", "No")
             .subscribe((data: {}) => {
               console.log(data);
@@ -681,7 +646,6 @@ export class DropAreaComponent implements OnInit {
             console.log(res);
       });
     }
-    console.log(this.fetchService.screenData);
     this.fetchService.postScreenForm(this.newFormID,this.fetchService.screenData["ScreenID"],this.model.name,this.model.description)
     .subscribe((data: {}) => {
       console.log(data);
@@ -708,7 +672,7 @@ export class DropAreaComponent implements OnInit {
 
           //If Existing Table, then Update < NewFormID, DynamicTable > Mapping and Alter Table
 
-          if (this.fetchService.screenData["existTable"] === true)
+          if (this.fetchService.screenData["existTable"])
           {
             this.fetchService.getFormDSD(this.existingFormid)
             .subscribe((ress) => {
@@ -732,7 +696,7 @@ export class DropAreaComponent implements OnInit {
                     confirmButtonText: "OK",
                   }).then((res) => {
                       setTimeout(function () {
-                        location.reload();
+                        //location.reload();
                       },1500);
                   })
                   
@@ -767,7 +731,7 @@ export class DropAreaComponent implements OnInit {
                   confirmButtonText: "OK",
                 }).then((res) => {
                     setTimeout(function () {
-                      location.reload();
+                      //location.reload();
                     }, 1500);
                 })
               });

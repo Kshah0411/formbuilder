@@ -119,7 +119,7 @@ route.post("/postScreen", async (req, res) => {
 let cacheScreens;
 let cacheScreensTime;
 route.get("/getScreens", async (req,res, next) => {	
-  if(cacheScreensTime && cacheScreensTime > Date.now() - 15 * 1000)  //20 seconds
+  if(cacheScreensTime && cacheScreensTime > Date.now() - 10 * 1000)  //10 seconds
   {
     return res.send(cacheScreens);
   }

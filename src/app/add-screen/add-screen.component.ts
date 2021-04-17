@@ -28,15 +28,16 @@ export class AddScreenComponent implements OnInit {
     'formNames':[],
     'forms':[]
   };
+
   formModel: any = {
-    name: "Form name...",
-    description: "Form Description...",
+    name: "Form name",
+    description: "Form Description..",
     theme: {
       bgColor: "ffffff",
       textColor: "555555",
       bannerImage: "",
     },
-    attributes: '',
+    attributes: [],
   };
 
   prevScreenID = ""
@@ -88,6 +89,8 @@ export class AddScreenComponent implements OnInit {
       this.router.navigateByUrl('/createform');	
     }
     this.fetchService.screenData["existForm"] = false;
+    this.fetchService.screenData["existTable"] = false;
+    //console.log(this.fetchService.screenData)
     swal("Please Add a Form")
     
     this.fetchService.sendAddScreenEvent(this.model.ScreenName);

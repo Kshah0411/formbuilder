@@ -202,8 +202,8 @@ export class ViewFormComponent implements OnInit {
   ];
   modelFields:Array<field>=[];
   model:any = {
-    name:'App name...',
-    description:'App Description...',
+    name:'Form name...',
+    description:'Form Description...',
     theme:{
       bgColor:"ffffff",
       textColor:"555555",

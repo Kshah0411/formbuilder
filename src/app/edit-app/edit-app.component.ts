@@ -5,6 +5,8 @@ import swal from 'sweetalert2';
 import { DndDropEvent, DropEffect } from 'ngx-drag-drop';
 import {FetcherService} from '../fetcher.service';
 import { NgbModalConfig, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCarousel, NgbSlideEvent, NgbSlideEventSource } from '@ng-bootstrap/ng-bootstrap';
+
 
 @Component({
   selector: 'app-edit-app',
@@ -26,6 +28,7 @@ export class EditAppComponent implements OnInit {
   step3class : string = 'col-6';
   step4class : string = 'col-2';
   screen: any;
+  @ViewChild('carousel', {static : true}) carousel: NgbCarousel;
 
   fieldModels:Array<field>=[
     {
@@ -196,18 +199,6 @@ export class EditAppComponent implements OnInit {
   editForm: any;	
   popup: boolean = false;
 
-  public fruits:string[] = [	
-    "apple 1",	
-    "apple 2",	
-    "banana 3",	
-    "apple 4",	
-    "banana 5",	
-    "banana 6",	
-    "apple 7",	
-    "banana 8",	
-    "apple 9",	
-  ];
-
   constructor(
     private route:ActivatedRoute, private fetchService: FetcherService,
     private router:Router,config: NgbModalConfig, private modalService: NgbModal
@@ -286,25 +277,6 @@ export class EditAppComponent implements OnInit {
         this.model.attributes.splice(i,1);
       }
     });
-
-  }
-
-  updateForm(){
-    // let input = new FormData;
-    // input.append('id',this.model._id);
-    // input.append('name',this.model.name);
-    // input.append('description',this.model.description);
-    // input.append('bannerImage',this.model.theme.bannerImage);
-    // input.append('bgColor',this.model.theme.bgColor);
-    // input.append('textColor',this.model.theme.textColor);
-    // input.append('attributes',JSON.stringify(this.model.attributes));
-
-    
-
-    // this.us.putDataApi('/admin/updateForm',input).subscribe(r=>{
-    //   console.log(r);
-    //   swal('Success','App updated successfully','success');
-    // });
   }
 
   ngOnInit() {
@@ -344,20 +316,17 @@ export class EditAppComponent implements OnInit {
   formStatus(status){	
     this.viewForm = status;	
     this.showStep4();
-
   }
 
   showStep4(){	
     this.step = 4;
-    this.step1class = 'col-2';
-    this.step2class = 'col-2';
-    this.step3class = 'col-6';
+    // this.step1class = 'col-2';
+    this.step2class = 'col-3';
+    this.step3class = 'col-7';
     this.step4class = 'col-2';
   }
 
   formDisplay(form, screen) {	
-    // console.log(form)
-    // console.log(screen)
     this.fetchService.sendFormClickEvent(form,screen);
     this.viewForm = true;
     this.fetchService.res = {"form":form,"screen":screen};
@@ -366,24 +335,35 @@ export class EditAppComponent implements OnInit {
 	
   showStep3(){
     this.step = 3;
-    this.step1class = 'col-2';
-    this.step2class = 'col-2';
-    this.step3class = 'col-8';
+    // this.step1class = 'col-2';
+    this.step2class = 'col-3';
+    this.step3class = 'col-9';
   }
 
   addScreenForm() {	
-    swal("New Form in the '"+this.screen.ScreenID+"' screen?");
+    swal("New Form in the '"+this.screen.ScreenID+"' Page");
     var model = {	
       'ScreenName': this.screen.ScreenName,	
       'ScreenID': this.screen.ScreenID,	
-      'AdminID': this.screen.CreatedBy,	
       'existForm': false,	
       'existTable': false,	
       'formName': '',	
       'formNames': [],	
       'forms': []	
     };	
+
+    //If it comes from New Screen button, it will have AdminID property, or else CreatedBy property
+    if(Object.prototype.hasOwnProperty.call(this.screen, "AdminID"))
+    {
+      model['AdminID'] = this.screen.AdminID;
+    }
+    else
+    {
+      model['AdminID'] = this.screen.CreatedBy;
+    }
+
     this.fetchService.screenData = model;	
+    this.fetchService.res = {"form":{},"screen":{}};
     this.fetchService.sendFormClickEvent({},{});
     this.viewForm = false;
     this.showStep4();
@@ -400,7 +380,7 @@ export class EditAppComponent implements OnInit {
       index = list.length;	
     }	
     list.splice( index, 0, event.data );	
-    console.log(this.getScreens);	
+    //console.log(this.getScreens);	
     this.fetchService.setScreenOrder((index+1), event.data.ScreenID).subscribe((res) => {	
       console.log(res);	
     });		
