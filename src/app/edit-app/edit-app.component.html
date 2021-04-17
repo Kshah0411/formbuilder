@@ -14,7 +14,7 @@
 
   <div class="row ml-2 mr-1">
     <!-- <div [class]="step1class" *ngIf="step == 1"> -->
-      <div [class]="step1class" *ngIf="step<3">
+      <div [class]="step1class" *ngIf="step<2">
       <div class="container ml-7 mr-7 mt-4 mb-3">
         <ngb-carousel #carousel [interval]="2100" pauseOnHover="true" pauseOnFocus="true" 
         style="background-color: rgb(197, 248, 248);height: 17em;">
@@ -34,21 +34,20 @@
         <span>No Pages Yet</span>
       </div>
       <div *ngIf="getScreens && getScreens.length > 0">
-        <h4>Pages</h4>
       </div>
       <div class="accordion">
         <div dndDropzone dndEffectAllowed="move" (dndDrop)="onDrop($event, getScreens)" class="dndList">
           <div dndPlaceholderRef class="dndPlaceholder"> </div>
           <div *ngFor="let screen of getScreens;let i=index;" [dndDraggable]="screen" [dndType]="screen" 
-          dndEffectAllowed="move" (dndMoved)="onDragged(screen, getScreens)" (click)="getFormData(screen)">
+          dndEffectAllowed="move" (dndMoved)="onDragged(screen, getScreens)" (click)="getFormData(screen)" class="pageitem">
             <div class="card card-header" style="float: left;width: 100%" data-toggle="tooltip" data-placement="top" title="Click to see forms">
               <span style="display: flex;justify-content: space-between;">{{screen.ScreenName}}</span>
             </div>
           </div>
+          <button type="button" class="btn addpage" (click)="openPopup(content)">
+            <i class="fa fa-plus"></i>&nbsp;Add a Page</button>	
         </div>	
       </div>
-      <button type="button" class="btn btn-success btn-sm btngreen mt-2" (click)="openPopup(content)">
-        <i class="fa fa-plus"></i>&nbsp;Add a Page</button>	
     </div>
       
     <div [class]="step2class" style="border-left: 1px solid lightblue;" *ngIf="step>1">
@@ -60,17 +59,17 @@
           </li>	
         </ul>
       </div>
-      <button type="button" class="btn btn-success btn-sm btngreen mt-2" data-toggle="tooltip" data-placement="top"
-       title="Add form in {{screen.ScreenName}}" (click)="addScreenForm()"><i class="fa fa-plus"></i>&nbsp;Add Form</button>
     </div>
       
-    <div [class]="step3class" style="border-left: 1px solid lightblue;height:500px;overflow-y: scroll;" class="scrollbar" *ngIf="step>2">
+    <div [class]="step3class" style="border-left: 1px solid lightblue;height:500px;overflow-y: scroll;" class="scrollbar" *ngIf="step>1">
       <div *ngFor="let drop of dropArr.slice().reverse()" style="margin-top:70px;">
-        <app-drop-area [indexval]="drop" [viewForm]="viewForm" (newItemEvent)='formStatus($event)'></app-drop-area>
+        <button type="button" class="btn btn-sm btngreen mt-2" data-toggle="tooltip" data-placement="top"
+         title="Add form in {{screen.ScreenName}}" (click)="addScreenForm()"><i class="fa fa-plus"></i>&nbsp;Add Form</button>
+        <app-drop-area [indexval]="drop" [viewForm]="viewForm" (newItemEvent)='formStatus($event)' *ngIf="step==3"></app-drop-area>
       </div>
     </div>
       
-    <div [class]="step4class" style="border-left: 1px solid lightblue;height:500px;overflow-y: scroll;" class="scrollbar" *ngIf="step>3">
+    <div [class]="step4class" style="border-left: 1px solid lightblue;height:500px;overflow-y: scroll;" class="scrollbar" *ngIf="step>1">
       <h4 (click)="test()" style="margin-top: 30px;">Select Fields</h4>
       <p>Customize your form by drag and drop below fields to the form area.</p>
       <!--a draggable element-->

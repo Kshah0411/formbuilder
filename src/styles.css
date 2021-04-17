@@ -155,3 +155,27 @@ mat-card {
 .formslist ul li a{
     color: inherit;
 }
+.pageitem{
+    display: inline-block;
+    margin: 10px;
+    border: 1px solid rgba(0,0,0,.125);
+    background-color: aliceblue;
+    vertical-align: middle;
+    text-align: center;
+    width: 150px;
+}
+.pageitem .card-header{
+    background-color: aliceblue;
+    min-height: 70px;
+}
+.pageitem .card{
+    border: none;
+}
+.pageitem .card span{
+    text-align: center;
+    margin: 0 auto;
+}
+.addpage{
+    width: 150px;
+    margin: 10px;
+}

@@ -194,7 +194,7 @@ export class EditAppComponent implements OnInit {
   @ViewChild('content', { static: true }) myModal: ElementRef;	
   getScreens: any;	
   getForms: any;	
-  viewForm: boolean = false;	
+  viewForm: boolean = true;	
   formFields: any;	
   editForm: any;	
   popup: boolean = false;
@@ -309,22 +309,24 @@ export class EditAppComponent implements OnInit {
     this.step = 2;
     this.screen = [];
     this.screen = screen;
-    this.step1class = 'col-4';
+    // this.step1class = 'col-6';
     this.step2class = 'col-4';
+    this.step3class = 'col-4';
+    this.step4class = 'col-4';
   }
   	
   formStatus(status){	
     this.viewForm = status;	
-    this.showStep4();
+    // this.showStep4();
   }
 
-  showStep4(){	
-    this.step = 4;
-    // this.step1class = 'col-2';
-    this.step2class = 'col-3';
-    this.step3class = 'col-7';
-    this.step4class = 'col-2';
-  }
+  // showStep4(){	
+  //   this.step = 4;
+  //   // this.step1class = 'col-2';
+  //   this.step2class = 'col-3';
+  //   this.step3class = 'col-7';
+  //   this.step4class = 'col-2';
+  // }
 
   formDisplay(form, screen) {	
     this.fetchService.sendFormClickEvent(form,screen);
@@ -336,8 +338,8 @@ export class EditAppComponent implements OnInit {
   showStep3(){
     this.step = 3;
     // this.step1class = 'col-2';
-    this.step2class = 'col-3';
-    this.step3class = 'col-9';
+    // this.step2class = 'col-3';
+    // this.step3class = 'col-9';
   }
 
   addScreenForm() {	
@@ -366,7 +368,8 @@ export class EditAppComponent implements OnInit {
     this.fetchService.res = {"form":{},"screen":{}};
     this.fetchService.sendFormClickEvent({},{});
     this.viewForm = false;
-    this.showStep4();
+    this.showStep3();
+    // this.showStep4();
   }
   
   
