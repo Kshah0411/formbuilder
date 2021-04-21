@@ -23,9 +23,9 @@ export class EditAppComponent implements OnInit {
   success = false;
   dropArr = [1];
   step : number = 1;
-  step1class : string = 'col-12';
-  step2class : string = 'col-2';
-  step3class : string = 'col-6';
+  step1class : string = '';
+  step2class : string = '';
+  step3class : string = '';
   step4class : string = 'col-2';
   screen: any;
   @ViewChild('carousel', {static : true}) carousel: NgbCarousel;
@@ -315,9 +315,9 @@ export class EditAppComponent implements OnInit {
     this.screen = [];
     this.screen = screen;
     // this.step1class = 'col-4';
-    this.step2class = 'col-3';
-    this.step3class = 'col-7';
-    this.step4class = 'col-2';
+    // this.step2class = 'col-3';
+    this.step3class = '';
+    this.step4class = '';
   }
   	
   formStatus(status){	

@@ -184,3 +184,10 @@ mat-card {
 .addpage:hover{
     background-color: aliceblue;
 }
+.mat-sidenav-container{
+    width: 100%;
+    min-height: 600px;
+}
+.disabledClass{
+    background-color: rgba(0,0,0,.03);
+}
