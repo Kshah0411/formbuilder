@@ -2,7 +2,7 @@ const express = require('express')
 const route = new express.Router()
 var connection = require('../config/db')
 const query = require('../config/query');
-var dbName = "sys"
+var dbName = "formbuilder"
 
 
 // route.get('/getforms',function(req,res){
@@ -102,7 +102,7 @@ route.post("/CreateDB", async (req,res) =>{
 
 route.post("/createScreen", async (req,res) =>{
     const conn = await connection().catch(e => {});
-    const result = await query(conn,"CREATE TABLE IF NOT EXISTS "+dbName+".`screen` (`ScreenID` varchar(40) NOT NULL,`ScreenName` varchar(45) NOT NULL,`Date` datetime NOT NULL,`CreatedBy` varchar(45) NOT NULL,`Display` varchar(20) NOT NULL,`Modified` varchar(20) NOT NULL, `OrderNo` MEDIUMINT NOT NULL, PRIMARY KEY (`ScreenID`))")
+    const result = await query(conn,"CREATE TABLE IF NOT EXISTS "+dbName+".`Screen` (`ScreenID` varchar(40) NOT NULL,`ScreenName` varchar(45) NOT NULL,`Date` datetime NOT NULL,`CreatedBy` varchar(45) NOT NULL,`Display` varchar(20) NOT NULL,`Modified` varchar(20) NOT NULL, `OrderNo` MEDIUMINT NOT NULL, PRIMARY KEY (`ScreenID`))")
     .catch((err) => {res.status(400).send(err);})
     res.json({ Message: 'Created Screen table' });
 });
@@ -111,7 +111,7 @@ route.post("/postScreen", async (req, res) => {
     //console.log(req.body)
     const {ScreenID,ScreenName,CreatedBy, Display,Modified,OrderNo} = req.body;
     const conn = await connection().catch(e => { });
-    const result = await query(conn, "INSERT INTO "+dbName+".`screen` VALUES (?,?,now(),?,?,?,?)",
+    const result = await query(conn, "INSERT INTO "+dbName+".`Screen` VALUES (?,?,now(),?,?,?,?)",
     [ScreenID, ScreenName, CreatedBy, Display, Modified,OrderNo]).catch((err) => { res.status(400).send(err); })
     res.json({ Message: 'Inserted in Screen Table' });
 });
@@ -119,13 +119,13 @@ route.post("/postScreen", async (req, res) => {
 let cacheScreens;
 let cacheScreensTime;
 route.get("/getScreens", async (req,res, next) => {	
-  if(cacheScreensTime && cacheScreensTime > Date.now() - 10 * 1000)  //10 seconds
+  if(cacheScreensTime && cacheScreensTime > Date.now() - 5 * 1000)  //10 seconds
   {
     return res.send(cacheScreens);
   }
   try{
     const conn = await connection().catch(e => {});	
-    const results = await query(conn,"SELECT * FROM "+dbName+".screen where Display = 'Yes' Order by OrderNo, Date").	
+    const results = await query(conn,"SELECT * FROM "+dbName+".Screen where Display = 'Yes' Order by OrderNo, Date").	
     catch((err) => { res.status(400).json(err);})	
     cacheScreens = results;
     cacheScreensTime = Date.now();
@@ -141,7 +141,7 @@ route.post("/setScreenOrder", async (req, res) => {
   //console.log(req.body)
   const {OrderNo,ScreenID} = req.body;
   const conn = await connection().catch(e => { });
-  const result = await query(conn, "UPDATE "+dbName+".`screen` SET OrderNo = \""+OrderNo+"\" Where ScreenID = \""+ScreenID+"\"")
+  const result = await query(conn, "UPDATE "+dbName+".`Screen` SET OrderNo = \""+OrderNo+"\" Where ScreenID = \""+ScreenID+"\"")
   .catch((err) => { res.status(400).send(err); })
   res.json({ Message: 'Updated in Screen Table' });
 });
@@ -216,7 +216,7 @@ route.post("/modifyForm", async (req, res) => {
 route.post("/getForm", async (req,res) => {
   const {ScreenID} = req.body;
   const conn = await connection().catch(e => {});
-  const results = await query(conn,"SELECT * from "+dbName+".screenform s join "+dbName+".form f on s.ScreenFormID = f.FormID where ScreenID = \""+ScreenID+"\" and Modified = \"No\"").
+  const results = await query(conn,"SELECT * from "+dbName+".ScreenForm s join "+dbName+".Form f on s.ScreenFormID = f.FormID where ScreenID = \""+ScreenID+"\" and Modified = \"No\"").
   catch((err) => { res.status(400).json(err);})
   res.status(200).send(results);
 });
@@ -306,7 +306,7 @@ route.post("/postArchived", async (req, res) => {
 
 route.get("/getArchived", async (req,res) => {
   const conn = await connection().catch(e => {});
-  const results = await query(conn,"Select * from "+dbName+".screenform join "+dbName+".Archived join "+dbName+".screen on screenform.ScreenFormID = archived.FormID and screenform.ScreenID = archived.ScreenID and screen.ScreenID = archived.ScreenID").
+  const results = await query(conn,"Select * from "+dbName+".ScreenForm join "+dbName+".Archived join "+dbName+".Screen on ScreenForm.ScreenFormID = Archived.FormID and ScreenForm.ScreenID = Archived.ScreenID and Screen.ScreenID = Archived.ScreenID").
   catch((err) => { res.status(400).json(err);})
   res.status(200).send(results);
 });
@@ -336,7 +336,7 @@ route.post("/createDynamicTable", async (req, res) => {
   qu = qu.slice(0,-1)
   qu = qu+", PRIMARY KEY(Patient_ID_ID));";
 
-  console.log(qu);
+  //console.log(qu);
   const conn = await connection().catch(e => { });
   const result = await query(conn, qu)
   .catch((err) => { res.status(400).send(err); })
@@ -364,7 +364,7 @@ route.post("/postDynamicTable", async (req, res) => {
   qu = qu.slice(0,-1)
   qu = qu+");";
 
-  console.log(qu);
+  //console.log(qu);
   const conn = await connection().catch(e => { });
   const result = await query(conn, qu)
   .catch((err) => { res.status(400).send(err); })
@@ -390,7 +390,7 @@ route.post("/alterDynamicTable", async (req, res) => {
   qu = qu.slice(0,-1);
   qu = qu + ";";
 
-  console.log(qu);
+  //console.log(qu);
   const ans = await query(conn, qu)
   .catch((err) => { res.status(400).json(err); })
   res.json({Message:"Altered Dynamic Table"});

@@ -104,10 +104,10 @@ export class DataViewComponent implements OnInit {
                 resolve(this.treeData);
               });
           });
-        })
-      ).then((res) => {
-        this.show = true;
+        }))
+        .then((res) => {
         this.activeTree = this.treeData;
+        this.show = true;
       });
     }
     catch (error)
@@ -222,7 +222,7 @@ export class DataViewComponent implements OnInit {
               })
             }))
             .then((res) => {
-              console.log(this.archiveTree)
+              //console.log(this.archiveTree)
             })
 
         })
@@ -265,8 +265,16 @@ export class DataViewComponent implements OnInit {
           this.columns.push(arr[2]);
           this.tooltips.push(arr[0]+" / "+arr[1]); 
         })
-        
-        this.patientsData = res;
+
+        if (typeof res[0] === 'string')
+        {
+          this.patientsData = [];
+        }
+        else
+        {
+          this.patientsData = res;
+        }
+        //console.log(res)
 
         this.dataSource = new MatTableDataSource<any>(this.patientsData);
         this.dataSource.paginator = this.paginator;

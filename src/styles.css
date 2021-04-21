@@ -117,7 +117,7 @@
     background: white;
     border: none;
 }
-html, body { height: 100%; }
+html, body { height: 100%; scroll-behavior: smooth;}
 body { margin: 0; padding-top:52px;font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .accordion .card.card-header{	
@@ -138,7 +138,9 @@ mat-card {
     padding: .75rem 1.25rem;
     width: 100%;
 }
-
+.btngreen:hover{
+    background-color: rgb(236, 231, 231);
+}
 .formslist ul{
     list-style: none;
     margin: 0;
@@ -178,4 +180,7 @@ mat-card {
 .addpage{
     width: 150px;
     margin: 10px;
+} 
+.addpage:hover{
+    background-color: aliceblue;
 }

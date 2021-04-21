@@ -438,7 +438,7 @@ export class DropAreaComponent implements OnInit {
                 }
               }
               swal('Deleted!','Your Form has been Removed.','success');
-
+              
           this.model.name = "Form name...";
           this.model.description = "Form Description...";
           this.model.attributes = [];
@@ -588,7 +588,7 @@ export class DropAreaComponent implements OnInit {
                               confirmButtonText: "OK",
                             }).then((res) => {
                               setTimeout(function () {
-                                //location.reload();
+                                location.reload();
                               }, 1500);
                             })
                           });
@@ -696,7 +696,7 @@ export class DropAreaComponent implements OnInit {
                     confirmButtonText: "OK",
                   }).then((res) => {
                       setTimeout(function () {
-                        //location.reload();
+                        location.reload();
                       },1500);
                   })
                   
@@ -731,7 +731,7 @@ export class DropAreaComponent implements OnInit {
                   confirmButtonText: "OK",
                 }).then((res) => {
                     setTimeout(function () {
-                      //location.reload();
+                      location.reload();
                     }, 1500);
                 })
               });

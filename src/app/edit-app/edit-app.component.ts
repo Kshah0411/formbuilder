@@ -30,6 +30,11 @@ export class EditAppComponent implements OnInit {
   screen: any;
   @ViewChild('carousel', {static : true}) carousel: NgbCarousel;
 
+  goBack()
+  {
+    this.step = 1;
+  }
+  
   fieldModels:Array<field>=[
     {
       "type": "text",
@@ -309,10 +314,10 @@ export class EditAppComponent implements OnInit {
     this.step = 2;
     this.screen = [];
     this.screen = screen;
-    // this.step1class = 'col-6';
-    this.step2class = 'col-4';
-    this.step3class = 'col-4';
-    this.step4class = 'col-4';
+    // this.step1class = 'col-4';
+    this.step2class = 'col-3';
+    this.step3class = 'col-7';
+    this.step4class = 'col-2';
   }
   	
   formStatus(status){	
